@@ -24,8 +24,8 @@ Delivered via web application, SMS text, and email, to start.
 
 ## Guiding Principles
 
-- Adheres to **Keel v5** principles (see project grounding — full principles to be pasted/filed).
-- Leverages **CORE** (definition pending — full framework to be pasted/filed).
+- Adheres to **Keel v6** (`documents/keel-v6/`) — extends v5 (`documents/keel-v5/`, kept for history) with standing findings-log and test-plan-document principles. See [D-006](decisions/D-006-adopt-keel-v6.md).
+- Leverages **CORE** — Context/Objective/Role/Example brief captured in the Mission & Problem Statement above and in `documents/sessions/MESG-close-out-2026-08-02.md` §6.
 
 ## System Components (to be filled in as designed)
 
