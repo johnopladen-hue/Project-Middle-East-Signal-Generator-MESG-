@@ -24,8 +24,11 @@
 
 ## Open Decisions / Pending
 
+- [ ] **D-001 candidate — decision-log structure.** Keel v5 (Principle 7 / Step 8) prescribes `docs/decisions/` with one numbered file per decision (D-001, D-002…; five fields: decision, context, options rejected, evidence, supersedes). This project currently uses a single consolidated `decisions.md` instead. Flagged by Planner in `documents/sessions/MESG-close-out-2026-08-02.md` §5 as a genuine divergence requiring an explicit Owner decision — Planner's recommendation is to adopt the Keel numbered-file structure under `documents/decisions/` and keep this file as an index pointing at them. **Not yet resolved.**
 - [ ] Tech stack (backend, frontend, data store, translation/NLP approach) — pending first build order/TDD.
-- [ ] Full text of **Keel v5** principles — to be provided and filed for daily grounding.
-- [ ] Full definition of **CORE** framework — to be provided and filed for daily grounding.
+- [x] Full text of **Keel v5** principles — provided 2026-08-02, filed in `documents/keel-v5/`.
+- [ ] Full definition of **CORE** framework — CORE brief (Context/Objective/Role/Example) captured in `documents/sessions/MESG-close-out-2026-08-02.md` §6 and in `architecture.md`; confirm no separate CORE methodology doc is still owed beyond that.
+- [ ] Hosting platform — drives Keel Part B (CI/CD, secrets, deploy gate) per `documents/sessions/MESG-pre-work-next-session.md`.
 - [ ] SMS/email delivery provider(s).
-- [ ] Source list / language coverage for Middle East discourse ingestion.
+- [ ] Source list / language coverage for Middle East discourse ingestion — see `documents/sessions/MESG-pre-work-next-session.md` re: narrow v1 scope recommendation.
+- [ ] Legal/ethics position on source collection (scraping, elicitation, ToS) — flagged as a risk in the 2026-08-02 close-out, unscoped.
