@@ -23,4 +23,5 @@ export const handlers = [
   http.get("/api/pipeline/status", () =>
     HttpResponse.json({ last_run_at: "2026-09-06T09:12:00Z", silent_source_count: 3 }),
   ),
+  http.get("/api/briefs", () => HttpResponse.json([])),
 ];

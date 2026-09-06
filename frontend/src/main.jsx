@@ -2,7 +2,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import App from "./App.jsx";
 import { AppShell } from "./app/AppShell";
 import { AuthProvider } from "./app/AuthContext";
 import { ProtectedRoute } from "./app/ProtectedRoute";
@@ -10,6 +9,7 @@ import { queryClient } from "./app/queryClient";
 import { ToastProvider } from "./components/primitives/Toast";
 import "./index.css";
 import { ComingSoon } from "./routes/ComingSoon.jsx";
+import { Dashboard } from "./routes/Dashboard.jsx";
 import { Gallery } from "./routes/Gallery.jsx";
 import { Login } from "./routes/Login.jsx";
 
@@ -29,7 +29,7 @@ createRoot(document.getElementById("root")).render(
                   </ProtectedRoute>
                 }
               >
-                <Route path="/" element={<App />} />
+                <Route path="/" element={<Dashboard />} />
                 <Route path="/briefs/:id" element={<ComingSoon title="Brief" />} />
                 <Route path="/stories/:id" element={<ComingSoon title="Story detail" />} />
                 <Route path="/alerts" element={<ComingSoon title="Alerts" />} />
