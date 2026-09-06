@@ -15,6 +15,7 @@ import { Gallery } from "./routes/Gallery.jsx";
 import { Login } from "./routes/Login.jsx";
 import { SignalDetail } from "./routes/SignalDetail.jsx";
 import { Story } from "./routes/Story.jsx";
+import { Weekly } from "./routes/Weekly.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -37,8 +38,8 @@ createRoot(document.getElementById("root")).render(
                 <Route path="/stories/:id" element={<Story />} />
                 <Route path="/alerts" element={<Alerts />} />
                 <Route path="/alerts/:id" element={<SignalDetail />} />
-                <Route path="/weekly" element={<ComingSoon title="Weekly" />} />
-                <Route path="/weekly/:id" element={<ComingSoon title="Weekly detail" />} />
+                <Route path="/weekly" element={<Weekly />} />
+                <Route path="/weekly/:id" element={<Weekly />} />
                 <Route
                   path="/admin/sources"
                   element={
