@@ -208,3 +208,16 @@ class DeliveryLog(Base):
     status: Mapped[str] = mapped_column(String(16))
     sent_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class Settings(Base):
+    """Thresholds/cadence (TDD §5, §7 admin/settings). Not in the TDD §6
+    entity table — added as a singleton row since Admin needs somewhere
+    real to read/write; actual threshold/cadence fields are still open
+    (documents/decisions.md: scheduler mechanism), so this holds a free-form
+    JSON bag rather than named columns that would need picking now."""
+
+    __tablename__ = "settings"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    values: Mapped[dict] = mapped_column(JSON, default=dict)
