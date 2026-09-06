@@ -1,4 +1,5 @@
 import { AlertTriangle, Trash2 } from "lucide-react";
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { Badge } from "../components/primitives/Badge";
 import { Button } from "../components/primitives/Button";
@@ -31,6 +32,11 @@ function Section({ title, children }) {
     </section>
   );
 }
+
+Section.propTypes = {
+  title: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+};
 
 /** Dev-only component gallery (Order 2 PROOF). Not part of the shipped app routes. */
 export function Gallery() {
