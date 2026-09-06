@@ -8,8 +8,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install pytest
+      - run: pip install -r backend/requirements.txt
       - run: pytest -q
+        working-directory: backend
   deploy:
     needs: test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
