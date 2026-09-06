@@ -1,0 +1,20 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pytest
+      - run: pytest -q
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "DEPLOY placeholder: hosting platform is still an open decision (documents/decisions.md)."
+          echo "This job proves the merge-on-green gate now; real deploy mechanics land once that decision is made."
