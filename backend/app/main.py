@@ -19,6 +19,7 @@ from app.database import init_db, seed_dev_user
 from app.routers.auth import router as auth_router
 from app.routers.briefs import router as briefs_router
 from app.routers.pipeline import router as pipeline_router
+from app.routers.stories import router as stories_router
 
 
 @asynccontextmanager
@@ -38,6 +39,7 @@ app.add_middleware(SessionMiddleware, secret_key=os.environ.get("MESG_SESSION_SE
 app.include_router(auth_router)
 app.include_router(briefs_router)
 app.include_router(pipeline_router)
+app.include_router(stories_router)
 
 
 @app.get("/health")
