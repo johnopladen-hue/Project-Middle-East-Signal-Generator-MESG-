@@ -12,6 +12,7 @@
 | [D-004](decisions/D-004-planner-builder-working-model.md) | Planner/Builder working model | 2026-08-02 | Decided | — |
 | [D-005](decisions/D-005-v1-security-model.md) | v1 security model | 2026-08-02 | Decided | — |
 | [D-006](decisions/D-006-adopt-keel-v6.md) | Adopt Keel v6 as the governing discipline | 2026-08-02 | Decided | — |
+| [D-007](decisions/D-007-adopt-keel-v9.md) | Adopt Keel v9 as the governing discipline | 2026-09-06 | Decided | D-006 (version only) |
 
 ## Open Decisions / Pending (not yet a D-file)
 
