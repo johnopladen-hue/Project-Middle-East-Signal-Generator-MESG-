@@ -15,6 +15,7 @@
 | [D-007](decisions/D-007-adopt-keel-v9.md) | Adopt Keel v9 as the governing discipline | 2026-09-06 | Decided | D-006 (version only) |
 | [D-008](decisions/D-008-v1-source-scope.md) | v1 source scope: Levantine Arabic + Persian | 2026-09-06 | Decided | — |
 | [D-009](decisions/D-009-v1-technology-stack.md) | v1 technology stack (backend, DB, frontend, auth) | 2026-09-06 | Decided | — |
+| [D-010](decisions/D-010-frontend-decisions.md) | Frontend decisions F-1–F-7 (query layer, auth transport, styling, icons, routing, roles) | 2026-09-06 | Decided | Extends D-009 |
 
 ## Open Decisions / Pending (not yet a D-file)
 
