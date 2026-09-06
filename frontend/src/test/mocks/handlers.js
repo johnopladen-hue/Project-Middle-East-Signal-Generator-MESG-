@@ -27,4 +27,7 @@ export const handlers = [
   http.get("/api/recipients/summary", () =>
     HttpResponse.json({ active_count: 4, email_count: 3, sms_count: 1 }),
   ),
+  http.get("/api/admin/sources", () => HttpResponse.json([])),
+  http.get("/api/admin/recipients", () => HttpResponse.json([])),
+  http.get("/api/admin/settings", () => HttpResponse.json({ values: {} })),
 ];

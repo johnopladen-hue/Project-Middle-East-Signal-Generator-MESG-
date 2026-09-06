@@ -9,6 +9,9 @@ import { queryClient } from "./app/queryClient";
 import { ToastProvider } from "./components/primitives/Toast";
 import "./index.css";
 import { Alerts } from "./routes/Alerts.jsx";
+import { AdminRecipients } from "./routes/admin/Recipients.jsx";
+import { AdminSettings } from "./routes/admin/Settings.jsx";
+import { AdminSources } from "./routes/admin/Sources.jsx";
 import { ComingSoon } from "./routes/ComingSoon.jsx";
 import { Dashboard } from "./routes/Dashboard.jsx";
 import { Gallery } from "./routes/Gallery.jsx";
@@ -44,7 +47,7 @@ createRoot(document.getElementById("root")).render(
                   path="/admin/sources"
                   element={
                     <ProtectedRoute requireRole="admin">
-                      <ComingSoon title="Admin — Sources" />
+                      <AdminSources />
                     </ProtectedRoute>
                   }
                 />
@@ -52,7 +55,7 @@ createRoot(document.getElementById("root")).render(
                   path="/admin/recipients"
                   element={
                     <ProtectedRoute requireRole="admin">
-                      <ComingSoon title="Admin — Recipients" />
+                      <AdminRecipients />
                     </ProtectedRoute>
                   }
                 />
@@ -60,7 +63,7 @@ createRoot(document.getElementById("root")).render(
                   path="/admin/settings"
                   element={
                     <ProtectedRoute requireRole="admin">
-                      <ComingSoon title="Admin — Settings" />
+                      <AdminSettings />
                     </ProtectedRoute>
                   }
                 />
