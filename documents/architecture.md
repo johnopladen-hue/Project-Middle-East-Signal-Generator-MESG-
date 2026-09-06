@@ -48,7 +48,17 @@ _TBD — populate once first TDD defining ingestion/analysis pipeline is receive
 
 ## Tech Stack
 
-_TBD — repo currently ships a Python `.gitignore`; confirm stack in first build order/TDD._
+Per [D-009](decisions/D-009-v1-technology-stack.md):
+
+| Layer | Choice |
+|---|---|
+| Backend/API | Python + FastAPI |
+| Database | SQLAlchemy ORM; PostgreSQL (production) / SQLite in-memory (tests) |
+| Frontend | React + Vite, plain JavaScript |
+| Auth | Username/password (argon2 hash), httpOnly session cookies |
+| Translation, Analysis/LLM, Email, SMS, Scheduler, Hosting | Interface-based, deferred pending vendor decision — see `decisions.md` open list |
+
+**v1 source scope** (per [D-008](decisions/D-008-v1-source-scope.md)): Levantine Arabic and Iranian Persian, from `documents/reference/Languages_and_Religions.md`.
 
 ## Security Model
 
