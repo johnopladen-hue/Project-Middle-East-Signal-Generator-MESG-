@@ -24,4 +24,7 @@ export const handlers = [
     HttpResponse.json({ last_run_at: "2026-09-06T09:12:00Z", silent_source_count: 3 }),
   ),
   http.get("/api/briefs", () => HttpResponse.json([])),
+  http.get("/api/recipients/summary", () =>
+    HttpResponse.json({ active_count: 4, email_count: 3, sms_count: 1 }),
+  ),
 ];
