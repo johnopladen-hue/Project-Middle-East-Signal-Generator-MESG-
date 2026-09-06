@@ -17,6 +17,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.database import init_db, seed_dev_user
 from app.routers.auth import router as auth_router
+from app.routers.briefs import router as briefs_router
 from app.routers.pipeline import router as pipeline_router
 
 
@@ -35,6 +36,7 @@ app = FastAPI(title="MESG API", version="0.1.0", lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key=os.environ.get("MESG_SESSION_SECRET", secrets.token_hex(32)))
 
 app.include_router(auth_router)
+app.include_router(briefs_router)
 app.include_router(pipeline_router)
 
 
