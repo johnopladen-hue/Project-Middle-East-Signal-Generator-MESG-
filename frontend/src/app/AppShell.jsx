@@ -69,12 +69,12 @@ export function AppShell() {
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="flex items-center justify-between border-b border-rule bg-surface-raised px-4 py-3">
-          <div className="flex items-center gap-3">
+        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-rule bg-surface-raised px-4 py-3">
+          <div className="flex min-w-0 items-center gap-3">
             <IconButton
               label="Open navigation"
               icon={Menu}
-              className="md:hidden"
+              className="shrink-0 md:hidden"
               onClick={() => setDrawerOpen(true)}
             />
             <PipelineStatusStrip
@@ -82,8 +82,8 @@ export function AppShell() {
               silentSourceCount={pipelineStatus?.silent_source_count ?? 0}
             />
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-ink">{user?.username}</span>
+          <div className="flex shrink-0 items-center gap-3">
+            <span className="hidden truncate text-sm text-ink sm:inline">{user?.username}</span>
             <IconButton label="Log out" icon={LogOut} onClick={() => logout()} />
           </div>
         </header>

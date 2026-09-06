@@ -70,8 +70,8 @@ export function AdminSources() {
             header: "Last seen",
             render: (row) =>
               isSilent(row.last_seen_at) ? (
-                <span className="flex items-center gap-1 text-grade-2">
-                  <AlertTriangle size={14} aria-hidden="true" /> Silent
+                <span className="flex items-center gap-1 text-ink">
+                  <AlertTriangle size={14} aria-hidden="true" className="text-grade-2" /> Silent
                 </span>
               ) : (
                 new Date(row.last_seen_at).toLocaleString()

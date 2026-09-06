@@ -30,7 +30,7 @@ export function BriefItemCard({ item, rawItemsById }) {
         ) : (
           <ChevronRight size={16} aria-hidden="true" className="shrink-0 text-ink-muted" />
         )}
-        <span className="flex-1 text-sm font-medium text-ink">
+        <span className="min-w-0 flex-1 text-sm font-medium text-ink">
           {item.title ?? `Story #${item.story_id}`}
         </span>
         {item.event_type ? <Tag>{item.event_type}</Tag> : null}
