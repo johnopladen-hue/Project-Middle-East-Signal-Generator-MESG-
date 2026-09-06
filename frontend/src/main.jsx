@@ -12,6 +12,7 @@ import { ComingSoon } from "./routes/ComingSoon.jsx";
 import { Dashboard } from "./routes/Dashboard.jsx";
 import { Gallery } from "./routes/Gallery.jsx";
 import { Login } from "./routes/Login.jsx";
+import { Story } from "./routes/Story.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -31,7 +32,7 @@ createRoot(document.getElementById("root")).render(
               >
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/briefs/:id" element={<ComingSoon title="Brief" />} />
-                <Route path="/stories/:id" element={<ComingSoon title="Story detail" />} />
+                <Route path="/stories/:id" element={<Story />} />
                 <Route path="/alerts" element={<ComingSoon title="Alerts" />} />
                 <Route path="/alerts/:id" element={<ComingSoon title="Signal detail" />} />
                 <Route path="/weekly" element={<ComingSoon title="Weekly" />} />

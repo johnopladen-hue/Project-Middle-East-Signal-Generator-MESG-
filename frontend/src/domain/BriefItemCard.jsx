@@ -1,6 +1,7 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import PropTypes from "prop-types";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Card } from "../components/primitives/Card";
 import { Tag } from "../components/primitives/Tag";
 import { GradeBlock } from "./GradeBlock";
@@ -64,6 +65,14 @@ export function BriefItemCard({ item, rawItemsById }) {
             hasCorroboratingArtefact={item.has_corroborating_artefact}
             contraryEvidence={item.contrary_evidence}
           />
+
+          <Link
+            to={`/stories/${item.story_id}`}
+            className="inline-block text-sm text-accent hover:underline
+              focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            View full story
+          </Link>
         </div>
       ) : null}
     </Card>
