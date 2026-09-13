@@ -16,11 +16,11 @@
 | [D-008](decisions/D-008-v1-source-scope.md) | v1 source scope: Levantine Arabic + Persian | 2026-09-06 | Decided | — |
 | [D-009](decisions/D-009-v1-technology-stack.md) | v1 technology stack (backend, DB, frontend, auth) | 2026-09-06 | Decided | — |
 | [D-010](decisions/D-010-frontend-decisions.md) | Frontend decisions F-1–F-7 (query layer, auth transport, styling, icons, routing, roles) | 2026-09-06 | Decided | Extends D-009 |
+| [D-011](decisions/D-011-hosting-platform-and-deploy-mechanism.md) | Hosting platform (Fly.io) and localhost dev-for-now | 2026-09-13 | Decided | — |
 
 ## Open Decisions / Pending (not yet a D-file)
 
 - [ ] Full definition of **CORE** framework — CORE brief (Context/Objective/Role/Example) captured in `documents/sessions/MESG-close-out-2026-08-02.md` §6 and in `architecture.md`; confirm no separate CORE methodology doc is still owed beyond that.
-- [ ] Hosting platform — drives Keel Part B (CI/CD, secrets, deploy gate) per `documents/sessions/MESG-pre-work-next-session.md`. Explicitly deferred by the Owner, 2026-09-06; backend work proceeds against the placeholder deploy step in the meantime.
 - [ ] Translation provider (LLM-based vs. dedicated MT service) — TDD §4.2.
 - [ ] Analysis/LLM provider — TDD §4.4.
 - [ ] SMS/email delivery provider(s) — TDD §4.7.
