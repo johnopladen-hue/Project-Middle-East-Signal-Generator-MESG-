@@ -53,12 +53,14 @@ Per [D-009](decisions/D-009-v1-technology-stack.md):
 | Layer | Choice |
 |---|---|
 | Backend/API | Python + FastAPI |
-| Database | SQLAlchemy ORM; PostgreSQL (production) / SQLite in-memory (tests) |
+| Database | SQLAlchemy ORM; PostgreSQL (production, per D-009) / SQLite (local dev, a real file at `backend/mesg_dev.db`) / SQLite temp-file (self-contained test suite, `backend/tests/conftest.py`) |
 | Frontend | React + Vite, plain JavaScript |
 | Auth | Username/password (argon2 hash), httpOnly session cookies |
 | Translation, Analysis/LLM, Email, SMS, Scheduler, Hosting | Interface-based, deferred pending vendor decision — see `decisions.md` open list |
 
 **v1 source scope** (per [D-008](decisions/D-008-v1-source-scope.md)): Levantine Arabic and Iranian Persian, from `documents/reference/Languages_and_Religions.md`.
+
+**Known risk — dev/prod database divergence:** local dev runs against a real SQLite file (`backend/mesg_dev.db`), matching [A-001](assumptions.md)'s "CI runner ≈ deploy target" framing but not actual prod (PostgreSQL, per D-009, not yet stood up). SQLite and PostgreSQL differ on concurrency, type coercion, and some SQL semantics; code that only ever ran against SQLite locally could behave differently on Postgres. Named here rather than left silent per the first-article orders (2026-09-13); no mitigation is built yet beyond the ORM boundary D-009 already chose for swappability.
 
 ## Security Model
 
@@ -71,3 +73,4 @@ Per [D-009](decisions/D-009-v1-technology-stack.md):
 | Date | Change | Source Doc |
 |---|---|---|
 | 2026-08-02 | Initial architecture scaffold created from project kickoff conversation | This session |
+| 2026-09-13 | Hosting platform decided (D-011); named the dev/prod SQLite-vs-PostgreSQL divergence as a known risk | `MESG-First-Article-Localhost-Orders-v0.1.md` O-2 |
