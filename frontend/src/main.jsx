@@ -16,6 +16,7 @@ import { ComingSoon } from "./routes/ComingSoon.jsx";
 import { Dashboard } from "./routes/Dashboard.jsx";
 import { Gallery } from "./routes/Gallery.jsx";
 import { Login } from "./routes/Login.jsx";
+import { MapView } from "./routes/MapView.jsx";
 import { OrganizationDetail } from "./routes/OrganizationDetail.jsx";
 import { Organizations } from "./routes/Organizations.jsx";
 import { SignalDetail } from "./routes/SignalDetail.jsx";
@@ -47,6 +48,7 @@ createRoot(document.getElementById("root")).render(
                 <Route path="/weekly/:id" element={<Weekly />} />
                 <Route path="/organizations" element={<Organizations />} />
                 <Route path="/organizations/:id" element={<OrganizationDetail />} />
+                <Route path="/map" element={<MapView />} />
                 <Route
                   path="/admin/sources"
                   element={

@@ -105,6 +105,11 @@ class Seeder:
         signal_is_imminent: bool,
         signal_status: str,
         divergence: dict | None = None,
+        # D-014/O-7: None means genuinely unlocated (Principle 11) - never a fake coordinate.
+        location_country: str | None = None,
+        location_precision: str | None = None,
+        latitude: float | None = None,
+        longitude: float | None = None,
     ) -> tuple[Story, Analysis]:
         first_seen = self.now - timedelta(days=day_offset, hours=1)
         story = Story(
@@ -113,6 +118,10 @@ class Seeder:
             status=status,
             first_seen_at=first_seen,
             last_updated_at=self.now - timedelta(days=day_offset),
+            location_country=location_country,
+            location_precision=location_precision,
+            latitude=latitude,
+            longitude=longitude,
         )
         self.session.add(story)
         self.session.flush()
@@ -245,6 +254,7 @@ def seed(session, reset: bool = False) -> None:
                     "english_media": "English-language wire coverage calls the same activity a routine, previously scheduled exercise.",
                     "divergence_points": ["'Unscheduled buildup' (in-region) vs. 'routine exercise' (English media)"],
                     "convergence_points": ["Both describe increased military presence in the same border area and window"]},
+        location_country="Syria", location_precision="city", latitude=36.2021, longitude=37.1343,  # Aleppo
     )
 
     ri4 = s.raw_item("fa_one_step_1", "fa", FA.format(event="بازداشت یک نویسنده فرهنگی", location="شهر", day="سه‌شنبه"),
@@ -259,6 +269,7 @@ def seed(session, reset: bool = False) -> None:
         contrary_evidence=None,
         assessments=[("fa_one_step_1", SourceAccessLevel.ONE_STEP, 0.5, "Single forum account, one step removed; no second source yet.")],
         signal_severity="elevated", signal_is_imminent=False, signal_status="reviewed",
+        location_country="Iran", location_precision="country", latitude=32.5750, longitude=54.2741,
     )
 
     # --- Day 1 (yesterday) -----------------------------------------------------
@@ -278,6 +289,7 @@ def seed(session, reset: bool = False) -> None:
         assessments=[("ar_agg_1", SourceAccessLevel.AGGREGATOR, 0.3, "Aggregator relaying an unsourced claim, no original reporting."),
                      ("en_direct_1", SourceAccessLevel.DIRECT, 0.85, "Wire photographer present at the event; direct firsthand evidence.")],
         signal_severity="critical", signal_is_imminent=False, signal_status="suppressed",
+        # Deliberately unlocated: the sourced facts never name a place (D-014, Principle 11).
     )
 
     ri7 = s.raw_item("ar_direct_2", "ar", AR.format(event="محاولة سيطرة عسكرية", location="العاصمة", day="الاثنين"),
@@ -292,6 +304,8 @@ def seed(session, reset: bool = False) -> None:
         contrary_evidence=None,
         assessments=[("ar_direct_2", SourceAccessLevel.DIRECT, 0.7, "Eyewitness network posted video from the scene; single source so far.")],
         signal_severity="critical", signal_is_imminent=True, signal_status="new",
+        # Point precision: the video pinpoints the specific government building, not just the city.
+        location_country="Syria", location_precision="point", latitude=33.5138, longitude=36.2765,  # Damascus
     )
 
     # --- Day 2 --------------------------------------------------------------
@@ -315,6 +329,8 @@ def seed(session, reset: bool = False) -> None:
                     "english_media": "International coverage cites the NGO's initial, lower figure as the assessment is still underway.",
                     "divergence_points": ["Casualty estimate: in-region higher vs. international initial-figure lower"],
                     "convergence_points": ["Both confirm the earthquake and its general location"]},
+        # Province precision: assessment teams haven't pinned an exact epicenter city yet.
+        location_country="Syria", location_precision="province", latitude=36.2021, longitude=37.1343,  # Aleppo Governorate
     )
 
     ri10 = s.raw_item("ar_agg_2", "ar", AR.format(event="انتشار مرض", location="مخيم على الحدود", day="الأحد"),
@@ -329,6 +345,7 @@ def seed(session, reset: bool = False) -> None:
         contrary_evidence=None,
         assessments=[("ar_agg_2", SourceAccessLevel.AGGREGATOR, 0.35, "Aggregator with no original reporting or named source.")],
         signal_severity="elevated", signal_is_imminent=False, signal_status="new",
+        # Deliberately unlocated: "a border camp" isn't a specific enough place to pin.
     )
 
     # --- Day 3 ----------------------------------------------------------------
@@ -348,6 +365,7 @@ def seed(session, reset: bool = False) -> None:
         assessments=[("ar_direct_1", SourceAccessLevel.DIRECT, 0.8, "Channel posted a photo from the scene of the detention."),
                      ("fa_direct_1", SourceAccessLevel.DIRECT, 0.65, "Official statement from a state wire service, independent of the first source.")],
         signal_severity="high", signal_is_imminent=False, signal_status="released",
+        location_country="Syria", location_precision="country", latitude=36.2021, longitude=37.1343,
     )
 
     # --- Day 4 ------------------------------------------------------------------
@@ -363,6 +381,7 @@ def seed(session, reset: bool = False) -> None:
         contrary_evidence=None,
         assessments=[("fa_one_step_1", SourceAccessLevel.ONE_STEP, 0.4, "Forum users noticing the silence, one step removed from the source itself.")],
         signal_severity="info", signal_is_imminent=False, signal_status="new",
+        # Deliberately unlocated: a source's silence isn't itself a place.
     )
 
     session.flush()

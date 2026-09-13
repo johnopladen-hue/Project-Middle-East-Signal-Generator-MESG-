@@ -128,6 +128,14 @@ class Story(Base):
     first_seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
     last_updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
 
+    # Location (D-014, O-7). NULL location_precision means genuinely unknown -
+    # never a fake/default coordinate (Principle 11). One of point/city/
+    # province/country when known.
+    location_country: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    location_precision: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    latitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+    longitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+
 
 class StoryItem(Base):
     __tablename__ = "story_items"
@@ -307,6 +315,38 @@ class Relationship(Base):
 
     source_org: Mapped[Organization] = relationship(foreign_keys=[source_org_id])
     target_org: Mapped[Organization] = relationship(foreign_keys=[target_org_id])
+
+
+class AorMembership(Base):
+    """Country -> Unified Command Plan AOR, stored as a dated, versioned
+    fact (D-015, O-5) - boundaries shift (Israel moved EUCOM -> CENTCOM,
+    2021-01-15), so "current as of what source, when" is part of the row,
+    not implicit."""
+
+    __tablename__ = "aor_memberships"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    aor: Mapped[str] = mapped_column(String(16))
+    country_name: Mapped[str] = mapped_column(String(64))
+    source: Mapped[str] = mapped_column(String(255))
+    source_url: Mapped[str] = mapped_column(String(1024))
+    source_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class FrameDivergenceNote(Base):
+    """A recorded point where in-region self-conception diverges from the
+    UCP/AOR frame (D-015, O-9) - the map's lens made a visible, editable
+    feature, not just a static label. Minimal first cut; the rich
+    systematic divergence overlay is deferred."""
+
+    __tablename__ = "frame_divergence_notes"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    scope_type: Mapped[str] = mapped_column(String(16))  # "region" | "organization"
+    scope_id: Mapped[str] = mapped_column(String(64))  # AOR code, or Organization.id as str
+    text: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    created_by: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
 
 class Settings(Base):
