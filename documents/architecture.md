@@ -68,9 +68,26 @@ Per [D-009](decisions/D-009-v1-technology-stack.md):
 - Recipient list (email/SMS) is a **whitelist** curated by the project owner.
 - Expected to evolve — track upgrades in `decisions.md`.
 
+## Actor-Network Layer (D-012)
+
+Adds an actor domain, modelled on the Mapping Militants shape: `Organization`, `OrganizationAlias`, `Designation`, `Relationship` (typed, dated edges), `Theatre`. Deliberately carries **no `type`/`is_terrorist` truth column** - a contested characterization is a `Designation` row attributed to a named body and date, and an organization can carry several, even contradictory ones, as parallel sourced characterizations rather than a single resolved verdict.
+
+**The harvester → storage contract (`backend/app/actors/contracts.py`, O-2):** every source-specific harvester (UCDP today; designation lists in Phase 3) must emit its output as this normalized shape - it never writes `Organization`/`Relationship` rows directly:
+
+```python
+ActorRecord(source_dataset, source_id, source_url, name, last_verified, aliases=(), theatre=None, grade=None)
+RelationshipRecord(source_dataset, source_org_id, target_org_id, kind, source_url, start_date=None, end_date=None)
+HarvestResult(actors=(...), relationships=(...))
+```
+
+`apply_harvest(session, result)` (`backend/app/actors/apply.py`) is the **only** code path that writes actor rows - resolving `Relationship` endpoints by `(source_dataset, source_id)`, counting (never silently dropping) any edge that resolves to nothing. `reconcile(session)` independently checks both directions: no edge points at a missing organization, and every organization's edges are countable.
+
+**Principle 11 in this schema:** "never harvested" and "harvested but empty" must carry different values, never look the same. `Organization.last_verified is None` means never harvested; a set `last_verified` with zero aliases/designations means it *was* checked and genuinely found none. A `Designation` with no matched `organization_id` is stored with `match_status = unmatched_pending_match`, not dropped and not treated as "this org isn't designated."
+
 ## Revision Log
 
 | Date | Change | Source Doc |
 |---|---|---|
 | 2026-08-02 | Initial architecture scaffold created from project kickoff conversation | This session |
 | 2026-09-13 | Hosting platform decided (D-011); named the dev/prod SQLite-vs-PostgreSQL divergence as a known risk | `MESG-First-Article-Localhost-Orders-v0.1.md` O-2 |
+| 2026-09-13 | Actor-network layer added (D-012): Organization/Alias/Designation/Relationship/Theatre schema + the ActorRecord harvester contract | `MESG-Actor-Network-Layer-Orders-v0.2.md` O-2 |
