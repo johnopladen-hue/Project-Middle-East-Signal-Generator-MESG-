@@ -210,6 +210,105 @@ class DeliveryLog(Base):
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
 
 
+class DesignationMatchStatus(str, enum.Enum):
+    MATCHED = "matched"
+    UNMATCHED_PENDING_MATCH = "unmatched_pending_match"
+
+
+class Theatre(Base):
+    """A geographic/operational theatre (e.g. Syria, Levant, Iran) - D-012."""
+
+    __tablename__ = "theatres"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(128), unique=True)
+
+
+class Organization(Base):
+    """An actor in the network layer (D-012). Deliberately carries no `type` /
+    `is_terrorist` truth column - contested characterizations live in
+    Designation, each attributed to who said it and when (D-012's own
+    rejection of a single-verdict column). `grade`/`last_verified` are
+    provenance, not the probability-of-truth grading Story uses."""
+
+    __tablename__ = "organizations"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(255))
+    theatre_id: Mapped[int | None] = mapped_column(ForeignKey("theatres.id"), nullable=True)
+    source_dataset: Mapped[str] = mapped_column(String(64))
+    source_id: Mapped[str] = mapped_column(String(128))
+    source_url: Mapped[str] = mapped_column(String(1024))
+    grade: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    last_verified: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    citation: Mapped[str | None] = mapped_column(Text, nullable=True)  # required attribution (D-013, Standing Order 6)
+
+    theatre: Mapped[Theatre | None] = relationship()
+
+
+class OrganizationAlias(Base):
+    """An alternate name for an Organization, sourced (D-012) - never a
+    model-generated guess at a name variant."""
+
+    __tablename__ = "organization_aliases"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    organization_id: Mapped[int] = mapped_column(ForeignKey("organizations.id"))
+    name: Mapped[str] = mapped_column(String(255))
+    source_dataset: Mapped[str] = mapped_column(String(64))
+    source_id: Mapped[str] = mapped_column(String(128))
+    source_url: Mapped[str] = mapped_column(String(1024))
+
+    organization: Mapped[Organization] = relationship()
+
+
+class Designation(Base):
+    """A characterization of an Organization by a named body (D-012/D-013) -
+    e.g. "designated FTO by US State Dept, list X, date Y." Never a truth
+    column: an org can carry several, even contradictory, Designation rows.
+
+    `organization_id` is nullable and `match_status` defaults to
+    unmatched-pending-match (Principle 11, O-7): identity matching against a
+    designation list is uncertain, so an unresolved match is its own visible
+    category, never silently dropped or silently treated as "not designated."
+    """
+
+    __tablename__ = "designations"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    organization_id: Mapped[int | None] = mapped_column(ForeignKey("organizations.id"), nullable=True)
+    raw_org_name: Mapped[str] = mapped_column(String(255))
+    body: Mapped[str] = mapped_column(String(255))
+    label: Mapped[str] = mapped_column(String(255))
+    list_id: Mapped[str] = mapped_column(String(128))
+    date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    url: Mapped[str] = mapped_column(String(1024))
+    match_status: Mapped[str] = mapped_column(String(32), default=DesignationMatchStatus.UNMATCHED_PENDING_MATCH.value)
+    match_confidence: Mapped[float | None] = mapped_column(Float, nullable=True)
+
+    organization: Mapped[Organization | None] = relationship()
+
+
+class Relationship(Base):
+    """A typed, dated edge between two Organizations (D-012) - e.g.
+    split-from, merged-into, ally, rival, faction-of. Sourced, like every
+    other actor-layer row."""
+
+    __tablename__ = "relationships"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    source_org_id: Mapped[int] = mapped_column(ForeignKey("organizations.id"))
+    target_org_id: Mapped[int] = mapped_column(ForeignKey("organizations.id"))
+    kind: Mapped[str] = mapped_column(String(32))
+    start_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    end_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    source_dataset: Mapped[str] = mapped_column(String(64))
+    source_url: Mapped[str] = mapped_column(String(1024))
+
+    source_org: Mapped[Organization] = relationship(foreign_keys=[source_org_id])
+    target_org: Mapped[Organization] = relationship(foreign_keys=[target_org_id])
+
+
 class Settings(Base):
     """Thresholds/cadence (TDD §5, §7 admin/settings). Not in the TDD §6
     entity table — added as a singleton row since Admin needs somewhere

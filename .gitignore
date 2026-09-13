@@ -64,6 +64,9 @@ db.sqlite3-journal
 # MESG local dev database (D-009: SQLite in dev, PostgreSQL in prod)
 backend/*.db
 
+# MESG downloaded third-party datasets (D-013) - re-downloadable, not vendored
+backend/data/
+
 # Flask stuff:
 instance/
 .webassets-cache
