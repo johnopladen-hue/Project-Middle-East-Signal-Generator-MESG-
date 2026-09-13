@@ -43,7 +43,10 @@ export function MapView() {
 
     const map = new MapLibreMap({
       container: mapContainerRef.current,
-      style: basemapStyle(`${window.location.origin}/basemap/levant.pmtiles`),
+      style: basemapStyle(
+        `${window.location.origin}/basemap/levant.pmtiles`,
+        `${window.location.origin}/fonts/{fontstack}/{range}.pbf`,
+      ),
       bounds: CENTCOM_BOUNDS,
       attributionControl: false,
     });
