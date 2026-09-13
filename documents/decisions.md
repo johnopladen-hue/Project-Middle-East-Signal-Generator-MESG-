@@ -19,6 +19,8 @@
 | [D-011](decisions/D-011-hosting-platform-and-deploy-mechanism.md) | Hosting platform (Fly.io) and localhost dev-for-now | 2026-09-13 | Decided | — |
 | [D-012](decisions/D-012-actor-network-layer.md) | Adopt the actor-network layer (Organization/Relationship/Designation/Theatre/Alias) | 2026-09-13 | Decided | — |
 | [D-013](decisions/D-013-source-licensing-posture.md) | Source & licensing posture for the actor register (UCDP approved, ACLED excluded, GTD out) | 2026-09-13 | Decided | Resolves the open legal/ethics item below |
+| [D-014](decisions/D-014-map-interface-technology.md) | Map interface technology + self-hosted basemap (MapLibre GL JS + PMTiles) | 2026-09-13 | Decided | — |
+| [D-015](decisions/D-015-region-taxonomy-ucp-aors.md) | Region taxonomy: UCP AORs as a labeled U.S. operational lens (CENTCOM v1) | 2026-09-13 | Decided | — |
 
 ## Open Decisions / Pending (not yet a D-file)
 

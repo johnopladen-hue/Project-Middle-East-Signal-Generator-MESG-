@@ -43,3 +43,15 @@ For each entry:
 - **Assumption:** A designation list's silence about a group means the group is *not* so designated ([D-013](decisions/D-013-source-licensing-posture.md)).
 - **Falsifying test:** A group absent from the FTO list is nonetheless designated elsewhere/later.
 - **If false:** Absence must be stored as "not found on list Y as of date Z," never as "not a terrorist." (The schema already stores unmatched designations as their own category, `Designation.match_status = unmatched_pending_match`, rather than as silent absence — see `architecture.md`'s Actor-Network Layer section.)
+
+- **ID:** A-006
+- **Date:** 2026-09-13
+- **Assumption:** AOR membership is current as of the harvested UCP revision ([D-015](decisions/D-015-region-taxonomy-ucp-aors.md), sourced from CRS IF11428 v3, dated 2022-03-30).
+- **Falsifying test:** A country is reassigned to a different command after our harvest date (as Israel was, EUCOM → CENTCOM, 2021-01-15 — the exact kind of change this guards against, already inside the harvested document's own history).
+- **If false:** The map mislabels a country's command and an AOR polygon is wrong. **Guard:** UCP revision/source + date stored per mapping; render "as of ‹revision›"; re-harvest on a new UCP. This assumption is already known to be *stale by construction* — the source itself is dated 2022, not 2026, because the primary `centcom.mil` source blocks automated access (`findings.md`).
+
+- **ID:** A-007
+- **Date:** 2026-09-13
+- **Assumption:** The map's located subset fairly represents the signal picture.
+- **Falsifying test:** The located-to-unlocated ratio shows that most signals — or most of a high-value signal type — are unlocatable, making the map a biased view.
+- **If false:** The map silently under-represents what it can't pin. **Guard:** always surface the unlocated count and tray, and report the ratio; unlocated items never vanish.

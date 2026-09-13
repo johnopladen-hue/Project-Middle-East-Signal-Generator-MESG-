@@ -150,6 +150,10 @@ def seed(session, reset: bool = False) -> None:
         status="open",
         first_seen_at=now - timedelta(hours=3),
         last_updated_at=now,
+        location_country="Syria",
+        location_precision="city",
+        latitude=36.2021,
+        longitude=37.1343,
     )
     session.add(story1)
     session.flush()
@@ -241,6 +245,12 @@ def seed(session, reset: bool = False) -> None:
         status="open",
         first_seen_at=now - timedelta(hours=5),
         last_updated_at=now - timedelta(hours=4),
+        # Country-level only, deliberately less precise than story1 - the source
+        # doesn't name a city, and Principle 11 says not to invent one.
+        location_country="Iran",
+        location_precision="country",
+        latitude=32.5750,
+        longitude=54.2741,
     )
     session.add(story2)
     session.flush()
@@ -318,6 +328,8 @@ def seed(session, reset: bool = False) -> None:
         status="closed",
         first_seen_at=now - timedelta(hours=8),
         last_updated_at=now - timedelta(hours=5),
+        # Deliberately left unlocated (location_precision stays NULL) - no
+        # city/country is named in the sourced facts, so none is invented.
     )
     session.add(story3)
     session.flush()
