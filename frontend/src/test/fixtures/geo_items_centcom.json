@@ -1,0 +1,464 @@
+{
+  "located": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            37.1343,
+            36.2021
+          ]
+        },
+        "properties": {
+          "kind": "story",
+          "id": 1,
+          "title": "[SYNTHETIC — DEV SEED] Military buildup reported near northern border",
+          "precision": "city",
+          "country": "Syria",
+          "detail_url": "/stories/1"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            54.2741,
+            32.575
+          ]
+        },
+        "properties": {
+          "kind": "story",
+          "id": 2,
+          "title": "[SYNTHETIC — DEV SEED] Unconfirmed report of a local writer's detention",
+          "precision": "country",
+          "country": "Iran",
+          "detail_url": "/stories/2"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            36.2765,
+            33.5138
+          ]
+        },
+        "properties": {
+          "kind": "story",
+          "id": 4,
+          "title": "[SYNTHETIC — DEV SEED] Rumors of an attempted takeover in the capital",
+          "precision": "point",
+          "country": "Syria",
+          "detail_url": "/stories/4"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            37.1343,
+            36.2021
+          ]
+        },
+        "properties": {
+          "kind": "story",
+          "id": 5,
+          "title": "[SYNTHETIC — DEV SEED] Earthquake strikes border region; casualty figures diverge",
+          "precision": "province",
+          "country": "Syria",
+          "detail_url": "/stories/5"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            37.1343,
+            36.2021
+          ]
+        },
+        "properties": {
+          "kind": "story",
+          "id": 7,
+          "title": "[SYNTHETIC — DEV SEED] Political figure's arrest confirmed by two independent accounts",
+          "precision": "country",
+          "country": "Syria",
+          "detail_url": "/stories/7"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            35.8802,
+            33.9231
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 1,
+          "title": "Government of Lebanon",
+          "precision": "country",
+          "country": "Lebanon",
+          "detail_url": "/organizations/1"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            54.2741,
+            32.575
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 2,
+          "title": "KDPI",
+          "precision": "country",
+          "country": "Iran",
+          "detail_url": "/organizations/2"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            34.9953,
+            31.4426
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 3,
+          "title": "IZL [Etzel]",
+          "precision": "country",
+          "country": "Israel",
+          "detail_url": "/organizations/3"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            34.9953,
+            31.4426
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 4,
+          "title": "Palestinian insurgents",
+          "precision": "country",
+          "country": "Israel",
+          "detail_url": "/organizations/4"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            34.9953,
+            31.4426
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 5,
+          "title": "Non PLO groups",
+          "precision": "country",
+          "country": "Israel",
+          "detail_url": "/organizations/5"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            34.9953,
+            31.4426
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 6,
+          "title": "PLO",
+          "precision": "country",
+          "country": "Israel",
+          "detail_url": "/organizations/6"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            34.9953,
+            31.4426
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 7,
+          "title": "PFLP",
+          "precision": "country",
+          "country": "Israel",
+          "detail_url": "/organizations/7"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            34.9953,
+            31.4426
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 8,
+          "title": "PFLP-GC",
+          "precision": "country",
+          "country": "Israel",
+          "detail_url": "/organizations/8"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            35.8802,
+            33.9231
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 9,
+          "title": "Fatah",
+          "precision": "country",
+          "country": "Lebanon",
+          "detail_url": "/organizations/9"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            34.9953,
+            31.4426
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 10,
+          "title": "PIJ",
+          "precision": "country",
+          "country": "Israel",
+          "detail_url": "/organizations/10"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            34.9953,
+            31.4426
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 11,
+          "title": "Hamas",
+          "precision": "country",
+          "country": "Israel",
+          "detail_url": "/organizations/11"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            34.9953,
+            31.4426
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 12,
+          "title": "PNA",
+          "precision": "country",
+          "country": "Israel",
+          "detail_url": "/organizations/12"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            34.9953,
+            31.4426
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 13,
+          "title": "AMB",
+          "precision": "country",
+          "country": "Israel",
+          "detail_url": "/organizations/13"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            34.9953,
+            31.4426
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 14,
+          "title": "PRC",
+          "precision": "country",
+          "country": "Israel",
+          "detail_url": "/organizations/14"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            35.8802,
+            33.9231
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 15,
+          "title": "Independent Nasserite Movement",
+          "precision": "country",
+          "country": "Lebanon",
+          "detail_url": "/organizations/15"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            35.8802,
+            33.9231
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 16,
+          "title": "NSF",
+          "precision": "country",
+          "country": "Lebanon",
+          "detail_url": "/organizations/16"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            35.8802,
+            33.9231
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 17,
+          "title": "LAA",
+          "precision": "country",
+          "country": "Lebanon",
+          "detail_url": "/organizations/17"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            35.8802,
+            33.9231
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 18,
+          "title": "Amal",
+          "precision": "country",
+          "country": "Lebanon",
+          "detail_url": "/organizations/18"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            35.8802,
+            33.9231
+          ]
+        },
+        "properties": {
+          "kind": "organization",
+          "id": 19,
+          "title": "NUF",
+          "precision": "country",
+          "country": "Lebanon",
+          "detail_url": "/organizations/19"
+        }
+      }
+    ]
+  },
+  "unlocated": {
+    "count": 3,
+    "items": [
+      {
+        "kind": "story",
+        "id": 3,
+        "title": "[SYNTHETIC — DEV SEED] Unverified death claim, contradicted by same-day footage"
+      },
+      {
+        "kind": "story",
+        "id": 6,
+        "title": "[SYNTHETIC — DEV SEED] Whispered reports of illness spreading in a border camp"
+      },
+      {
+        "kind": "story",
+        "id": 8,
+        "title": "[SYNTHETIC — DEV SEED] A monitored regional blog goes dark without explanation"
+      }
+    ]
+  },
+  "reconciliation": {
+    "located_count": 24,
+    "unlocated_count": 3,
+    "total": 27
+  }
+}

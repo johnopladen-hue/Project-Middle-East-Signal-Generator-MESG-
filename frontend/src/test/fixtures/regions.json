@@ -1,0 +1,32 @@
+[
+  {
+    "code": "NORTHCOM",
+    "label": "U.S. Northern Command",
+    "has_data": false
+  },
+  {
+    "code": "SOUTHCOM",
+    "label": "U.S. Southern Command",
+    "has_data": false
+  },
+  {
+    "code": "EUCOM",
+    "label": "U.S. European Command",
+    "has_data": false
+  },
+  {
+    "code": "AFRICOM",
+    "label": "U.S. Africa Command",
+    "has_data": false
+  },
+  {
+    "code": "CENTCOM",
+    "label": "U.S. Central Command",
+    "has_data": true
+  },
+  {
+    "code": "INDOPACOM",
+    "label": "U.S. Indo-Pacific Command",
+    "has_data": false
+  }
+]

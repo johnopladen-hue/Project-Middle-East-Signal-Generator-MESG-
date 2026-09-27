@@ -1,0 +1,116 @@
+[
+  {
+    "id": 13,
+    "name": "AMB",
+    "theatre": "Israel",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 18,
+    "name": "Amal",
+    "theatre": "Lebanon",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 9,
+    "name": "Fatah",
+    "theatre": "Lebanon",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 1,
+    "name": "Government of Lebanon",
+    "theatre": "Lebanon",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 11,
+    "name": "Hamas",
+    "theatre": "Israel",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 3,
+    "name": "IZL [Etzel]",
+    "theatre": "Israel",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 15,
+    "name": "Independent Nasserite Movement",
+    "theatre": "Lebanon",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 2,
+    "name": "KDPI",
+    "theatre": "Iran",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 17,
+    "name": "LAA",
+    "theatre": "Lebanon",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 16,
+    "name": "NSF",
+    "theatre": "Lebanon",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 19,
+    "name": "NUF",
+    "theatre": "Lebanon",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 5,
+    "name": "Non PLO groups",
+    "theatre": "Israel",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 7,
+    "name": "PFLP",
+    "theatre": "Israel",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 8,
+    "name": "PFLP-GC",
+    "theatre": "Israel",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 10,
+    "name": "PIJ",
+    "theatre": "Israel",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 6,
+    "name": "PLO",
+    "theatre": "Israel",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 12,
+    "name": "PNA",
+    "theatre": "Israel",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 14,
+    "name": "PRC",
+    "theatre": "Israel",
+    "source_dataset": "ucdp-actor"
+  },
+  {
+    "id": 4,
+    "name": "Palestinian insurgents",
+    "theatre": "Israel",
+    "source_dataset": "ucdp-actor"
+  }
+]
