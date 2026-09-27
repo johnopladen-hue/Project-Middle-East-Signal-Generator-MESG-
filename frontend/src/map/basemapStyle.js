@@ -1,7 +1,7 @@
-/** Neutral MapLibre style over the self-hosted Levant PMTiles extract
- * (D-014). Disputed boundaries render distinctly (O-4) - the vector data's
- * own `disputed` field, not a manual overlay (see findings.md). Palette
- * reuses the app's own design tokens (frontend/src/index.css). */
+/** Neutral MapLibre style over the self-hosted CENTCOM-AOR PMTiles extract
+ * (D-014/D-015). Disputed boundaries render distinctly (O-4) - the vector
+ * data's own `disputed` field, not a manual overlay (see findings.md).
+ * Palette reuses the app's own design tokens (frontend/src/index.css). */
 
 const INK_MUTED = "#5b626e";
 const SURFACE = "#f7f8fa";
