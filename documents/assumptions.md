@@ -55,3 +55,21 @@ For each entry:
 - **Assumption:** The map's located subset fairly represents the signal picture.
 - **Falsifying test:** The located-to-unlocated ratio shows that most signals — or most of a high-value signal type — are unlocatable, making the map a biased view.
 - **If false:** The map silently under-represents what it can't pin. **Guard:** always surface the unlocated count and tray, and report the ratio; unlocated items never vanish.
+
+- **ID:** A-008
+- **Date:** 2026-09-27
+- **Assumption:** NLLB-200 triage translation of headline and lede is good enough to decide which items deserve the deep pass ([D-016](decisions/D-016-translation-analysis-providers.md)).
+- **Falsifying test:** The O-3 bake-off shows NLLB materially garbles colloquial Levantine or Arabizi Telegram text, or a story later found through another path was sitting in the triage pile mistranslated.
+- **If false:** Switch the triage engine (Azure F0 fallback, a larger NLLB, or Claude Haiku triage on a smaller, filtered volume) and re-cost D-016.
+
+- **ID:** A-009
+- **Date:** 2026-09-27
+- **Assumption:** Telegram's public web preview stays keyless, available and parseable for the approved channels ([D-018](decisions/D-018-collection-posture.md)).
+- **Falsifying test:** Previews disappear or are blocked for approved channels. Tasnim is already one counter-example; the preview also served stale snapshots unless cache-busted.
+- **If false:** That voice is lost, or D-018's account-based route must be revisited, with a credential and the D-020 tripwire.
+
+- **ID:** A-010
+- **Date:** 2026-09-27
+- **Assumption:** $20/month of Claude covers the deep pass at v1 volume once triage is free ([D-016](decisions/D-016-translation-analysis-providers.md)).
+- **Falsifying test:** The circuit breaker trips before the daily brief completes on more than 3 days in any 14.
+- **If false:** Narrow the sources, raise the selection bar for the deep pass, or the Owner revisits the budget.

@@ -1,7 +1,7 @@
 # D-011 — Hosting platform (Fly.io) and localhost dev-for-now
 
 **Date:** 2026-09-13
-**Status:** Decided
+**Status:** Decided (tripwire clause amended by [D-020](D-020-go-remote-tripwire-amendment.md), 2026-09-27 — a local-only credential no longer trips it; Fly-as-eventual-host and the rest of this decision stand)
 
 ## Decision
 

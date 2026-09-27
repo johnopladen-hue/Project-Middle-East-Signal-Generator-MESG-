@@ -100,6 +100,15 @@ class Source(Base):
     last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     active: Mapped[bool] = mapped_column(Boolean, default=True)
 
+    # Ingestion collection metadata (D-018, O-4). `kind` is the collection
+    # method the ingestion collectors dispatch on; `type` above predates
+    # ingestion and is left as-is.
+    kind: Mapped[str | None] = mapped_column(String(32), nullable=True)  # rss | telegram | corroboration
+    source_class: Mapped[str | None] = mapped_column(String(32), nullable=True)  # native | pre_translated | english_comparison | corroboration
+    translator_selector: Mapped[str | None] = mapped_column(String(255), nullable=True)  # required when source_class == pre_translated (D-018)
+    pair_id: Mapped[str | None] = mapped_column(String(64), nullable=True)  # bilingual same-outlet pairs share a pair_id
+    designation_note: Mapped[str | None] = mapped_column(String(255), nullable=True)  # e.g. "US SDGT 2006" (D-018)
+
 
 class RawItem(Base):
     """The artefact of record. Nothing is analyzed that has no fetch record (TDD §4.1)."""
@@ -347,6 +356,23 @@ class FrameDivergenceNote(Base):
     text: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
     created_by: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
+
+class LlmSpend(Base):
+    """One ledgered Claude API call (D-016, O-2). Written before the caller
+    trusts the response - the budget circuit breaker (app.llm_budget) reads
+    this table to decide whether the *next* call is allowed, so every call
+    that actually happened must be in here, cost and all."""
+
+    __tablename__ = "llm_spend"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    model: Mapped[str] = mapped_column(String(64))
+    purpose: Mapped[str] = mapped_column(String(64))
+    input_tokens: Mapped[int] = mapped_column(Integer)
+    output_tokens: Mapped[int] = mapped_column(Integer)
+    cost_usd: Mapped[float] = mapped_column(Float)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
 
 
 class Settings(Base):

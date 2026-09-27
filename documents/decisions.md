@@ -13,22 +13,24 @@
 | [D-005](decisions/D-005-v1-security-model.md) | v1 security model | 2026-08-02 | Decided | — |
 | [D-006](decisions/D-006-adopt-keel-v6.md) | Adopt Keel v6 as the governing discipline | 2026-08-02 | Decided | — |
 | [D-007](decisions/D-007-adopt-keel-v9.md) | Adopt Keel v9 as the governing discipline | 2026-09-06 | Decided | D-006 (version only) |
-| [D-008](decisions/D-008-v1-source-scope.md) | v1 source scope: Levantine Arabic + Persian | 2026-09-06 | Decided | — |
+| [D-008](decisions/D-008-v1-source-scope.md) | v1 source scope: Levantine Arabic + Persian | 2026-09-06 | Decided (language list amended by D-017) | — |
 | [D-009](decisions/D-009-v1-technology-stack.md) | v1 technology stack (backend, DB, frontend, auth) | 2026-09-06 | Decided | — |
 | [D-010](decisions/D-010-frontend-decisions.md) | Frontend decisions F-1–F-7 (query layer, auth transport, styling, icons, routing, roles) | 2026-09-06 | Decided | Extends D-009 |
-| [D-011](decisions/D-011-hosting-platform-and-deploy-mechanism.md) | Hosting platform (Fly.io) and localhost dev-for-now | 2026-09-13 | Decided | — |
+| [D-011](decisions/D-011-hosting-platform-and-deploy-mechanism.md) | Hosting platform (Fly.io) and localhost dev-for-now | 2026-09-13 | Decided (tripwire amended by D-020) | — |
 | [D-012](decisions/D-012-actor-network-layer.md) | Adopt the actor-network layer (Organization/Relationship/Designation/Theatre/Alias) | 2026-09-13 | Decided | — |
 | [D-013](decisions/D-013-source-licensing-posture.md) | Source & licensing posture for the actor register (UCDP approved, ACLED excluded, GTD out) | 2026-09-13 | Decided | Resolves the open legal/ethics item below |
 | [D-014](decisions/D-014-map-interface-technology.md) | Map interface technology + self-hosted basemap (MapLibre GL JS + PMTiles) | 2026-09-13 | Decided | — |
 | [D-015](decisions/D-015-region-taxonomy-ucp-aors.md) | Region taxonomy: UCP AORs as a labeled U.S. operational lens (CENTCOM v1) | 2026-09-13 | Decided | — |
+| [D-016](decisions/D-016-translation-analysis-providers.md) | Translation & analysis providers: free-first hybrid (NLLB-200 triage, Claude deep pass, $20/month cap) | 2026-09-27 | Decided (provisional pending O-3 bake-off) | — |
+| [D-017](decisions/D-017-v1-scope-add-hebrew.md) | v1 scope amended: add Israeli Hebrew | 2026-09-27 | Decided | D-008 (language list only) |
+| [D-018](decisions/D-018-collection-posture.md) | Collection posture: RSS + public Telegram, keyless corroboration feeds; WhatsApp excluded | 2026-09-27 | Decided | Extends D-013 |
+| [D-019](decisions/D-019-scheduler-runtime.md) | Scheduler & runtime: in-app scheduler, localhost first | 2026-09-27 | Decided (build deferred to next order) | — |
+| [D-020](decisions/D-020-go-remote-tripwire-amendment.md) | Go-remote tripwire amended: a local-only credential does not trip it | 2026-09-27 | Decided | D-011 (tripwire clause only) |
 
 ## Open Decisions / Pending (not yet a D-file)
 
 - [ ] Full definition of **CORE** framework — CORE brief (Context/Objective/Role/Example) captured in `documents/sessions/MESG-close-out-2026-08-02.md` §6 and in `architecture.md`; confirm no separate CORE methodology doc is still owed beyond that.
-- [ ] Translation provider (LLM-based vs. dedicated MT service) — TDD §4.2.
-- [ ] Analysis/LLM provider — TDD §4.4.
 - [ ] SMS/email delivery provider(s) — TDD §4.7.
-- [ ] Scheduler mechanism — TDD §5.
 - [ ] Initial whitelist recipients for testing delivery — `documents/sessions/MESG-pre-work-next-session.md`.
 
 _When one of the above is resolved, give it the next D-number, write the full five-field file in `documents/decisions/`, and move it into the index table above._
