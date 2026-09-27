@@ -26,6 +26,7 @@
 | [D-018](decisions/D-018-collection-posture.md) | Collection posture: RSS + public Telegram, keyless corroboration feeds; WhatsApp excluded | 2026-09-27 | Decided | Extends D-013 |
 | [D-019](decisions/D-019-scheduler-runtime.md) | Scheduler & runtime: in-app scheduler, localhost first | 2026-09-27 | Decided (build deferred to next order) | — |
 | [D-020](decisions/D-020-go-remote-tripwire-amendment.md) | Go-remote tripwire amended: a local-only credential does not trip it | 2026-09-27 | Decided | D-011 (tripwire clause only) |
+| [D-021](decisions/D-021-v1-approved-source-set.md) | v1 approved source set (47 sources: RSS + Telegram, designated sources flagged) | 2026-09-27 | Decided | — |
 
 ## Open Decisions / Pending (not yet a D-file)
 

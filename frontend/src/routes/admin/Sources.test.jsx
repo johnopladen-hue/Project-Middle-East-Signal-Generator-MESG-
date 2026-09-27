@@ -30,6 +30,40 @@ describe("AdminSources", () => {
     expect(screen.getByText("Silent")).toBeInTheDocument();
   });
 
+  it("shows kind, class, and a designated flag for a real approved source (D-021)", async () => {
+    server.use(
+      http.get("/api/admin/sources", () =>
+        HttpResponse.json([
+          {
+            id: 3,
+            name: "Al-Manar",
+            url: "https://www.almanar.com.lb/rss",
+            language: "ar",
+            dialect: "Levantine",
+            type: "rss",
+            region: "Lebanon",
+            credibility_prior: 0.5,
+            last_seen_at: new Date().toISOString(),
+            active: true,
+            kind: "rss",
+            source_class: "native",
+            translator_selector: null,
+            pair_id: "almanar",
+            designation_note: "Hezbollah-owned. US SDGT (Treasury, 23 Mar 2006, EO 13224).",
+            verification_note: null,
+            seed_key: "almanar_ar",
+          },
+        ]),
+      ),
+    );
+    renderSources();
+
+    expect(await screen.findByText("Al-Manar")).toBeInTheDocument();
+    expect(screen.getByText("native")).toBeInTheDocument();
+    expect(screen.getByText("Designated")).toBeInTheDocument();
+    expect(screen.getByText("Pair: almanar")).toBeInTheDocument();
+  });
+
   it("can add a source", async () => {
     let created = null;
     server.use(

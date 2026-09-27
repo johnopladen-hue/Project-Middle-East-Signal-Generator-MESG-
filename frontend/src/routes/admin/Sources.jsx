@@ -64,6 +64,27 @@ export function AdminSources() {
           { key: "name", header: "Name" },
           { key: "language", header: "Language" },
           { key: "type", header: "Type" },
+          { key: "kind", header: "Kind", render: (row) => row.kind ?? "—" },
+          { key: "source_class", header: "Class", render: (row) => row.source_class ?? "—" },
+          {
+            key: "flags",
+            header: "Flags",
+            render: (row) => (
+              <div className="flex flex-wrap gap-1">
+                {row.designation_note ? (
+                  <span title={row.designation_note}>
+                    <Badge tone="grade-3">Designated</Badge>
+                  </span>
+                ) : null}
+                {row.pair_id ? <Badge tone="neutral">Pair: {row.pair_id}</Badge> : null}
+                {row.verification_note ? (
+                  <span className="text-xs text-ink-muted" title={row.verification_note}>
+                    ⚠ verification note
+                  </span>
+                ) : null}
+              </div>
+            ),
+          },
           { key: "credibility_prior", header: "Credibility" },
           {
             key: "last_seen_at",
