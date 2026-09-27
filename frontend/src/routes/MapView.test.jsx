@@ -183,20 +183,20 @@ describe("MapView (D-014, D-015)", () => {
     }
   });
 
-  it("builds the map from the self-hosted basemap and glyphs, framed on the Levant, with attribution shown", () => {
+  it("builds the map from the self-hosted basemap and glyphs, framed on the full CENTCOM AOR, with attribution shown", () => {
     serveMapApis();
     renderMap();
 
     const [map] = fake.state.maps;
     expect(fake.state.protocols.added).toContain("pmtiles");
     expect(map.options.bounds).toEqual([
-      [34, 29],
-      [42, 37],
+      [23.5, 11],
+      [88.5, 56.5],
     ]);
 
     // Nothing points at a third-party tile or font server (D-014).
     const style = JSON.stringify(map.options.style);
-    expect(style).toContain(`${window.location.origin}/basemap/levant.pmtiles`);
+    expect(style).toContain(`${window.location.origin}/basemap/centcom.pmtiles`);
     expect(style).toContain(`${window.location.origin}/fonts/{fontstack}/{range}.pbf`);
 
     // ODbL requires visible OSM attribution: a non-compact AttributionControl must be added.
