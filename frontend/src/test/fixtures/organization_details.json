@@ -1,0 +1,337 @@
+{
+  "13": {
+    "id": 13,
+    "name": "AMB",
+    "aliases": [
+      "al-Aqsa Martyrs' Brigades"
+    ],
+    "theatre": "Israel",
+    "source_dataset": "ucdp-actor",
+    "source_id": "211",
+    "source_url": "https://ucdp.uu.se/downloads/actor/ucdp-actor-261-csv.zip",
+    "citation": "Shawn Davies, Therese Pettersson, Magnus Oberg, Organized violence 1989-2025, and violent political protests, Journal of Peace Research, 2026. UCDP Actor Dataset v26.1, CC BY 4.0 (https://ucdp.uu.se/downloads/actor/ucdp-actor-codebook-261.pdf). Data has been normalized for MESG; this normalized form is not produced or endorsed by UCDP.",
+    "last_verified": "2026-09-13T00:00:00Z",
+    "designations": [],
+    "relationships": [
+      {
+        "id": 4,
+        "kind": "split-from",
+        "direction": "outbound",
+        "other_org_id": 9,
+        "other_org_name": "Fatah",
+        "start_date": null,
+        "end_date": null
+      },
+      {
+        "id": 5,
+        "kind": "ally",
+        "direction": "outbound",
+        "other_org_id": 9,
+        "other_org_name": "Fatah",
+        "start_date": null,
+        "end_date": null
+      }
+    ]
+  },
+  "18": {
+    "id": 18,
+    "name": "Amal",
+    "aliases": [
+      "Lebanese Resistance Detachment"
+    ],
+    "theatre": "Lebanon",
+    "source_dataset": "ucdp-actor",
+    "source_id": "239",
+    "source_url": "https://ucdp.uu.se/downloads/actor/ucdp-actor-261-csv.zip",
+    "citation": "Shawn Davies, Therese Pettersson, Magnus Oberg, Organized violence 1989-2025, and violent political protests, Journal of Peace Research, 2026. UCDP Actor Dataset v26.1, CC BY 4.0 (https://ucdp.uu.se/downloads/actor/ucdp-actor-codebook-261.pdf). Data has been normalized for MESG; this normalized form is not produced or endorsed by UCDP.",
+    "last_verified": "2026-09-13T00:00:00Z",
+    "designations": [],
+    "relationships": [
+      {
+        "id": 8,
+        "kind": "ally",
+        "direction": "outbound",
+        "other_org_id": 19,
+        "other_org_name": "NUF",
+        "start_date": null,
+        "end_date": null
+      }
+    ]
+  },
+  "9": {
+    "id": 9,
+    "name": "Fatah",
+    "aliases": [
+      "Palestinian National Liberation Movement"
+    ],
+    "theatre": "Lebanon",
+    "source_dataset": "ucdp-actor",
+    "source_id": "207",
+    "source_url": "https://ucdp.uu.se/downloads/actor/ucdp-actor-261-csv.zip",
+    "citation": "Shawn Davies, Therese Pettersson, Magnus Oberg, Organized violence 1989-2025, and violent political protests, Journal of Peace Research, 2026. UCDP Actor Dataset v26.1, CC BY 4.0 (https://ucdp.uu.se/downloads/actor/ucdp-actor-codebook-261.pdf). Data has been normalized for MESG; this normalized form is not produced or endorsed by UCDP.",
+    "last_verified": "2026-09-13T00:00:00Z",
+    "designations": [],
+    "relationships": [
+      {
+        "id": 4,
+        "kind": "split-from",
+        "direction": "inbound",
+        "other_org_id": 13,
+        "other_org_name": "AMB",
+        "start_date": null,
+        "end_date": null
+      },
+      {
+        "id": 5,
+        "kind": "ally",
+        "direction": "inbound",
+        "other_org_id": 13,
+        "other_org_name": "AMB",
+        "start_date": null,
+        "end_date": null
+      }
+    ]
+  },
+  "11": {
+    "id": 11,
+    "name": "Hamas",
+    "aliases": [
+      "Islamic Resistance Movement"
+    ],
+    "theatre": "Israel",
+    "source_dataset": "ucdp-actor",
+    "source_id": "209",
+    "source_url": "https://ucdp.uu.se/downloads/actor/ucdp-actor-261-csv.zip",
+    "citation": "Shawn Davies, Therese Pettersson, Magnus Oberg, Organized violence 1989-2025, and violent political protests, Journal of Peace Research, 2026. UCDP Actor Dataset v26.1, CC BY 4.0 (https://ucdp.uu.se/downloads/actor/ucdp-actor-codebook-261.pdf). Data has been normalized for MESG; this normalized form is not produced or endorsed by UCDP.",
+    "last_verified": "2026-09-13T00:00:00Z",
+    "designations": [
+      {
+        "id": 1,
+        "body": "OFAC",
+        "label": "FTO] [SDGT",
+        "list_id": "ofac-sdn-4695",
+        "date": null,
+        "url": "https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/SDN.CSV",
+        "match_status": "matched",
+        "match_confidence": 1.0
+      }
+    ],
+    "relationships": []
+  },
+  "15": {
+    "id": 15,
+    "name": "Independent Nasserite Movement",
+    "aliases": [],
+    "theatre": "Lebanon",
+    "source_dataset": "ucdp-actor",
+    "source_id": "236",
+    "source_url": "https://ucdp.uu.se/downloads/actor/ucdp-actor-261-csv.zip",
+    "citation": "Shawn Davies, Therese Pettersson, Magnus Oberg, Organized violence 1989-2025, and violent political protests, Journal of Peace Research, 2026. UCDP Actor Dataset v26.1, CC BY 4.0 (https://ucdp.uu.se/downloads/actor/ucdp-actor-codebook-261.pdf). Data has been normalized for MESG; this normalized form is not produced or endorsed by UCDP.",
+    "last_verified": "2026-09-13T00:00:00Z",
+    "designations": [],
+    "relationships": [
+      {
+        "id": 6,
+        "kind": "ally",
+        "direction": "outbound",
+        "other_org_id": 16,
+        "other_org_name": "NSF",
+        "start_date": null,
+        "end_date": null
+      }
+    ]
+  },
+  "16": {
+    "id": 16,
+    "name": "NSF",
+    "aliases": [
+      "LNM",
+      "Lebanese National Movement"
+    ],
+    "theatre": "Lebanon",
+    "source_dataset": "ucdp-actor",
+    "source_id": "237",
+    "source_url": "https://ucdp.uu.se/downloads/actor/ucdp-actor-261-csv.zip",
+    "citation": "Shawn Davies, Therese Pettersson, Magnus Oberg, Organized violence 1989-2025, and violent political protests, Journal of Peace Research, 2026. UCDP Actor Dataset v26.1, CC BY 4.0 (https://ucdp.uu.se/downloads/actor/ucdp-actor-codebook-261.pdf). Data has been normalized for MESG; this normalized form is not produced or endorsed by UCDP.",
+    "last_verified": "2026-09-13T00:00:00Z",
+    "designations": [],
+    "relationships": [
+      {
+        "id": 7,
+        "kind": "ally",
+        "direction": "outbound",
+        "other_org_id": 19,
+        "other_org_name": "NUF",
+        "start_date": null,
+        "end_date": null
+      },
+      {
+        "id": 6,
+        "kind": "ally",
+        "direction": "inbound",
+        "other_org_id": 15,
+        "other_org_name": "Independent Nasserite Movement",
+        "start_date": null,
+        "end_date": null
+      }
+    ]
+  },
+  "19": {
+    "id": 19,
+    "name": "NUF",
+    "aliases": [
+      "National Union Front"
+    ],
+    "theatre": "Lebanon",
+    "source_dataset": "ucdp-actor",
+    "source_id": "240",
+    "source_url": "https://ucdp.uu.se/downloads/actor/ucdp-actor-261-csv.zip",
+    "citation": "Shawn Davies, Therese Pettersson, Magnus Oberg, Organized violence 1989-2025, and violent political protests, Journal of Peace Research, 2026. UCDP Actor Dataset v26.1, CC BY 4.0 (https://ucdp.uu.se/downloads/actor/ucdp-actor-codebook-261.pdf). Data has been normalized for MESG; this normalized form is not produced or endorsed by UCDP.",
+    "last_verified": "2026-09-13T00:00:00Z",
+    "designations": [],
+    "relationships": [
+      {
+        "id": 7,
+        "kind": "ally",
+        "direction": "inbound",
+        "other_org_id": 16,
+        "other_org_name": "NSF",
+        "start_date": null,
+        "end_date": null
+      },
+      {
+        "id": 8,
+        "kind": "ally",
+        "direction": "inbound",
+        "other_org_id": 18,
+        "other_org_name": "Amal",
+        "start_date": null,
+        "end_date": null
+      }
+    ]
+  },
+  "7": {
+    "id": 7,
+    "name": "PFLP",
+    "aliases": [
+      "Popular Front for the Liberation of Palestine"
+    ],
+    "theatre": "Israel",
+    "source_dataset": "ucdp-actor",
+    "source_id": "205",
+    "source_url": "https://ucdp.uu.se/downloads/actor/ucdp-actor-261-csv.zip",
+    "citation": "Shawn Davies, Therese Pettersson, Magnus Oberg, Organized violence 1989-2025, and violent political protests, Journal of Peace Research, 2026. UCDP Actor Dataset v26.1, CC BY 4.0 (https://ucdp.uu.se/downloads/actor/ucdp-actor-codebook-261.pdf). Data has been normalized for MESG; this normalized form is not produced or endorsed by UCDP.",
+    "last_verified": "2026-09-13T00:00:00Z",
+    "designations": [
+      {
+        "id": 3,
+        "body": "OFAC",
+        "label": "FTO] [SDGT",
+        "list_id": "ofac-sdn-4709",
+        "date": null,
+        "url": "https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/SDN.CSV",
+        "match_status": "matched",
+        "match_confidence": 1.0
+      }
+    ],
+    "relationships": [
+      {
+        "id": 1,
+        "kind": "split-from",
+        "direction": "outbound",
+        "other_org_id": 6,
+        "other_org_name": "PLO",
+        "start_date": null,
+        "end_date": null
+      },
+      {
+        "id": 2,
+        "kind": "faction-of",
+        "direction": "outbound",
+        "other_org_id": 6,
+        "other_org_name": "PLO",
+        "start_date": null,
+        "end_date": null
+      },
+      {
+        "id": 3,
+        "kind": "split-from",
+        "direction": "inbound",
+        "other_org_id": 8,
+        "other_org_name": "PFLP-GC",
+        "start_date": null,
+        "end_date": null
+      }
+    ]
+  },
+  "8": {
+    "id": 8,
+    "name": "PFLP-GC",
+    "aliases": [
+      "Popular Front for the Liberation of Palestine-General Command"
+    ],
+    "theatre": "Israel",
+    "source_dataset": "ucdp-actor",
+    "source_id": "206",
+    "source_url": "https://ucdp.uu.se/downloads/actor/ucdp-actor-261-csv.zip",
+    "citation": "Shawn Davies, Therese Pettersson, Magnus Oberg, Organized violence 1989-2025, and violent political protests, Journal of Peace Research, 2026. UCDP Actor Dataset v26.1, CC BY 4.0 (https://ucdp.uu.se/downloads/actor/ucdp-actor-codebook-261.pdf). Data has been normalized for MESG; this normalized form is not produced or endorsed by UCDP.",
+    "last_verified": "2026-09-13T00:00:00Z",
+    "designations": [
+      {
+        "id": 4,
+        "body": "OFAC",
+        "label": "FTO] [SDGT",
+        "list_id": "ofac-sdn-4710",
+        "date": null,
+        "url": "https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/SDN.CSV",
+        "match_status": "matched",
+        "match_confidence": 0.9838709677419355
+      }
+    ],
+    "relationships": [
+      {
+        "id": 3,
+        "kind": "split-from",
+        "direction": "outbound",
+        "other_org_id": 7,
+        "other_org_name": "PFLP",
+        "start_date": null,
+        "end_date": null
+      }
+    ]
+  },
+  "6": {
+    "id": 6,
+    "name": "PLO",
+    "aliases": [
+      "Palestine Liberation Organization"
+    ],
+    "theatre": "Israel",
+    "source_dataset": "ucdp-actor",
+    "source_id": "204",
+    "source_url": "https://ucdp.uu.se/downloads/actor/ucdp-actor-261-csv.zip",
+    "citation": "Shawn Davies, Therese Pettersson, Magnus Oberg, Organized violence 1989-2025, and violent political protests, Journal of Peace Research, 2026. UCDP Actor Dataset v26.1, CC BY 4.0 (https://ucdp.uu.se/downloads/actor/ucdp-actor-codebook-261.pdf). Data has been normalized for MESG; this normalized form is not produced or endorsed by UCDP.",
+    "last_verified": "2026-09-13T00:00:00Z",
+    "designations": [],
+    "relationships": [
+      {
+        "id": 1,
+        "kind": "split-from",
+        "direction": "inbound",
+        "other_org_id": 7,
+        "other_org_name": "PFLP",
+        "start_date": null,
+        "end_date": null
+      },
+      {
+        "id": 2,
+        "kind": "faction-of",
+        "direction": "inbound",
+        "other_org_id": 7,
+        "other_org_name": "PFLP",
+        "start_date": null,
+        "end_date": null
+      }
+    ]
+  }
+}
