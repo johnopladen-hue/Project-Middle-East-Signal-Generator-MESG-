@@ -82,6 +82,8 @@ export function AppShell() {
             <PipelineStatusStrip
               lastRunAt={pipelineStatus?.last_run_at ?? null}
               silentSourceCount={pipelineStatus?.silent_source_count ?? 0}
+              llmMonthlySpendUsd={pipelineStatus?.llm_monthly_spend_usd ?? 0}
+              llmMonthlyCapUsd={pipelineStatus?.llm_monthly_cap_usd ?? 20}
             />
           </div>
           <div className="flex shrink-0 items-center gap-3">

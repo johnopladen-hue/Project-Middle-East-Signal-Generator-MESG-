@@ -21,7 +21,14 @@ export const handlers = [
   }),
   http.post("/api/auth/logout", () => new HttpResponse(null, { status: 204 })),
   http.get("/api/pipeline/status", () =>
-    HttpResponse.json({ last_run_at: "2026-09-06T09:12:00Z", silent_source_count: 3 }),
+    HttpResponse.json({
+      last_run_at: "2026-09-06T09:12:00Z",
+      silent_source_count: 3,
+      llm_daily_spend_usd: 0,
+      llm_monthly_spend_usd: 0,
+      llm_daily_cap_usd: 20 / 30,
+      llm_monthly_cap_usd: 20,
+    }),
   ),
   http.get("/api/briefs", () => HttpResponse.json([])),
   http.get("/api/recipients/summary", () =>

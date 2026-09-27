@@ -5,10 +5,17 @@ import PropTypes from "prop-types";
  * Text is `ink`, not text-grade-2: measured contrast of text-grade-2 on
  * the surface-raised header background is 3.84:1, failing WCAG AA (needs
  * 4.5:1) — see Badge.jsx for the same class of finding. */
-export function PipelineStatusStrip({ lastRunAt, silentSourceCount }) {
+export function PipelineStatusStrip({
+  lastRunAt,
+  silentSourceCount,
+  llmMonthlySpendUsd,
+  llmMonthlyCapUsd,
+}) {
   const lastRunText = lastRunAt
     ? `Last pipeline run: ${new Date(lastRunAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
     : "Last pipeline run: never";
+
+  const budgetExhausted = llmMonthlySpendUsd >= llmMonthlyCapUsd;
 
   return (
     <div className="flex min-w-0 flex-wrap items-center gap-2 text-sm text-ink-muted">
@@ -19,6 +26,10 @@ export function PipelineStatusStrip({ lastRunAt, silentSourceCount }) {
           {silentSourceCount} {silentSourceCount === 1 ? "source" : "sources"} silent
         </span>
       ) : null}
+      <span className={`shrink-0 ${budgetExhausted ? "flex items-center gap-1 text-ink" : ""}`}>
+        {budgetExhausted ? <AlertTriangle size={14} aria-hidden="true" className="text-grade-2" /> : null}
+        LLM spend: ${llmMonthlySpendUsd.toFixed(2)} / ${llmMonthlyCapUsd.toFixed(2)} this month
+      </span>
     </div>
   );
 }
@@ -26,4 +37,6 @@ export function PipelineStatusStrip({ lastRunAt, silentSourceCount }) {
 PipelineStatusStrip.propTypes = {
   lastRunAt: PropTypes.string,
   silentSourceCount: PropTypes.number.isRequired,
+  llmMonthlySpendUsd: PropTypes.number.isRequired,
+  llmMonthlyCapUsd: PropTypes.number.isRequired,
 };

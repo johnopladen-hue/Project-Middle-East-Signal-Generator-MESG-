@@ -1,7 +1,7 @@
 # D-008 — v1 source scope: Levantine Arabic + Persian
 
 **Date:** 2026-09-06
-**Status:** Decided
+**Status:** Decided (language list amended by [D-017](D-017-v1-scope-add-hebrew.md), 2026-09-27 — Israeli Hebrew added; reasoning and narrow-v1 principle below stand)
 
 ## Decision
 

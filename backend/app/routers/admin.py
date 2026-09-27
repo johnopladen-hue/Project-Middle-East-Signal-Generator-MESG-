@@ -27,6 +27,11 @@ class SourceIn(BaseModel):
     region: str | None = None
     credibility_prior: float = 0.5
     active: bool = True
+    kind: str | None = None
+    source_class: str | None = None
+    translator_selector: str | None = None
+    pair_id: str | None = None
+    designation_note: str | None = None
 
 
 class SourcePatch(BaseModel):
@@ -38,6 +43,11 @@ class SourcePatch(BaseModel):
     region: str | None = None
     credibility_prior: float | None = None
     active: bool | None = None
+    kind: str | None = None
+    source_class: str | None = None
+    translator_selector: str | None = None
+    pair_id: str | None = None
+    designation_note: str | None = None
 
 
 class SourceOut(BaseModel):
@@ -51,6 +61,11 @@ class SourceOut(BaseModel):
     credibility_prior: float
     last_seen_at: datetime | None
     active: bool
+    kind: str | None
+    source_class: str | None
+    translator_selector: str | None
+    pair_id: str | None
+    designation_note: str | None
 
     model_config = {"from_attributes": True}
 
