@@ -1,60 +1,55 @@
 # MESG — Pre-Work for Next Session
 
-**Prepared:** 2026-08-02 by Planner
-**For:** the next Planner session (a fresh chat)
-**Keel version:** v5
+**Prepared:** 2026-09-13 by Code (Claude Code, local)
+**For:** the next session — either Planner (fresh chat) or Code (fresh Claude Code session)
+**Keel version:** v9
+**Supersedes:** the 2026-08-02 version of this file (Keel v5 era — everything in it is resolved; kept no further)
 
 ---
 
 ## Opening ritual — do this first
 
-1. **Start a brand-new chat.** Do not reopen the previous one. Continuity lives in the repo, not in a chat log.
-2. **Upload nothing.** The connected repo is your ground truth.
-3. **Read, in order:** this pre-work doc → the latest close-out (`MESG-close-out-2026-08-02.md`) → `architecture.md`, `decisions.md`, `findings.md`, `test plan.md` (once they exist) → `Languages_and_Religions.md`.
-4. **Re-ground on KEEL v5** — the three pages — before planning anything.
-5. **State current state + today's agenda back to the Owner** before any work.
+1. **Start fresh.** Do not reopen a previous chat/session. Continuity lives in the repo, not in a chat log.
+2. **Ground on live, not a snapshot.** Clone/pull `johnopladen-hue/Project-Middle-East-Signal-Generator-MESG-`; do not trust any document's description of repo state, including this one — Standing Order 1.
+3. **Read, in order:** this pre-work doc → the latest close-outs in `documents/sessions/` (`MESG-close-out-2026-09-13-session-wrap.md`, then `-map-interface.md`, `-actor-network.md`, `-first-article.md`, in that order, newest first) → `documents/decisions.md` (through D-015) → `documents/findings.md` → `documents/assumptions.md` (through A-007) → `documents/architecture.md` → `documents/test_plan.md`.
+4. **State current state + today's agenda back to the Owner** before any work.
 
 ## Where we are — one line
 
-The brief and operating model are set; the Keel is **not yet fully laid or proven**; no architecture decisions are recorded. Feature planning stays on hold until Keel Part B PROOFs pass.
+The Keel was laid and proven weeks ago (CI gate, branch protection, D-001–D-010); since then the app has grown a real running backend + frontend (first article), a real actor-network register with genuine harvested UCDP/OFAC data (D-012/D-013), and a real self-hosted map interface with a CENTCOM AOR lens (D-014/D-015) — all with open, honestly-tracked gaps, not silent ones.
+
+## Immediate next step (before anything else)
+
+**Merge PR #24** (`map-render-fixes`, CI green) — two real bugs found by the Owner actually looking at the running app: the basemap rendered as plain grey (Vite/MapLibre Web Worker pre-bundling conflict, fixed), and place-name labels didn't render (fixed by self-hosting a Noto Sans glyph range). **The label fix was not re-verified live before the prior session ended** — after merging, open http://localhost:5173/map, hard-refresh, and confirm both the basemap (land/water/roads/boundaries) and English place-name labels actually render.
 
 ## Agenda (priority order)
 
-1. **Confirm the scaffolding exists.** Ask Code to confirm `documents/` and the four root docs (`architecture.md`, `decisions.md`, `findings.md`, `test plan.md`) are created and committed. If not, that is the first build order.
-2. **Resolve D-001 — decision-log structure.** KEEL numbered D-files vs. single `decisions.md`. Decide, then log it as the first entry.
-3. **Verify / finish Keel Part B.** Walk Steps 10–15:
-   - Choose the **hosting platform** first — it drives CI/CD, secrets, and deploy mechanics.
-   - Stand up **self-contained tests** (no network, no live services) — do this one early; it makes the rest cheap.
-   - Build **the gate** (tests must pass to ship; ship by merging), then **prove it** by pushing a failing test and watching it get blocked.
-   - Turn on **branch protection** (require PR, require the check, no bypass — not even for the Owner).
-   - **Kill hand-deploy.** Merging is the only way to ship.
-   - Nothing counts until the PROOF is witnessed.
-4. **Only then: first architecture pass.** High-level component map for MESG:
-   - (a) source ingestion, (b) language / analysis engine, (c) signal + alert logic and 1–5 scoring, (d) storage, (e) delivery (web app, email, SMS), (f) auth + whitelist.
-   - Capture as `architecture.md` v0, with the reasoning behind each choice recorded as D-entries.
+1. **Verify PR #24's fixes live** (above) — the one loose end from today.
+2. **Add frontend component tests** for `MapView.jsx`, `Organizations.jsx`, `OrganizationDetail.jsx` — three sessions running without them now (first-article, actor-network, map-interface all built UI with no `.test.jsx`, unlike every earlier route in this codebase). Worth doing as its own small pass before building more UI on top.
+3. **Decide what's next**, most likely one of:
+   - The **MMP actor-network addendum** the actor-network-layer orders flagged as the natural next increment (needs a TDD addendum + D-016).
+   - **Widening designation-list coverage** past OFAC's SDN (US State FTO's own page and UN/EU/UK lists are still unharvested — `centcom.mil`-style bot-blocking may recur; CRS-style public-domain fallbacks worked twice this project, worth trying first next time a .gov/.mil source is needed).
+   - **Non-English map labels** (only basic-Latin glyphs are self-hosted today).
+   - Something else the Owner has in mind — this file doesn't presume.
+4. **Fix the severity vocabulary mismatch** (`findings.md`, 2026-09-13, first-article session) — small, still open, low-risk to close out.
 
-## Decisions pending — need Owner input
+## Decisions/assumptions already resolved (do not re-litigate)
 
-- **Decision-log structure** (D-001 candidate; see close-out §5).
-- **Hosting platform** — determines Steps 12–15 mechanics and the secrets model.
-- **Language / framework** — `README` and `.gitignore` imply Python; confirm, and pick a web framework.
-- **Email provider and SMS provider** — affects secrets and architecture.
-- **v1 source scope** — which languages/dialects/outlets from `Languages_and_Religions.md` do we start with? Planner's recommendation: a **narrow v1** (one or two language communities) to prove the pipeline end-to-end before adding breadth.
+D-001 through D-015 are all Decided (`documents/decisions.md` is the index). A-001 through A-007 are registered (`documents/assumptions.md`). If a new build order proposes re-deciding any of these under new numbers, that is almost certainly the same stale-snapshot failure mode `findings.md` has now recorded three times this project — re-ground before drafting.
+
+## Open items carried forward (not exhaustive — see each close-out's §5 for full detail)
+
+- PR #24 merge + live verification (above).
+- Frontend component test gap (three UI surfaces).
+- Five non-CENTCOM AORs, self-hosted geocoder, UN/EU/UK designation lists, rich frame-divergence overlay — all named and deferred, not silently dropped.
+- Severity vocabulary mismatch (`severity_for()` vs. `SeverityMark`).
+- Fly.io deploy path — still unbuilt/unproven (D-011, A-003); localhost remains dev-only by design until the go-remote tripwire.
 
 ## Questions for the Owner
 
-- Is the repo currently **Public**? (Required for Planner's direct view. Go Private at the first real credential, first real user data, or first live deploy.)
-- Where do we stand on the **legal / ToS / ethics** of collecting and analyzing sources? We need a position before building ingestion.
-- Who is the **initial whitelist** (even just you) for testing daily-brief, alert, and Friday-summary delivery?
-
-## Definition of done for next session
-
-- Scaffolding confirmed committed.
-- D-001 (decision-log structure) logged.
-- Hosting platform chosen and logged as a decision.
-- A concrete plan for — or completion of — the remaining Keel Part B steps.
-- If the Keel is proven: `architecture.md` v0 drafted, with matching D-entries.
+- Which of the agenda items above is the priority for the next session?
+- Any real credential, real user data, or real remote deploy on the horizon? That's the go-remote tripwire (D-011/D-014) — it flips the repo Private and retires the localhost-only posture.
 
 ## The discipline — reminder
 
-Lay the Keel before features. Witness every PROOF with your own eyes. Every claim names its source artefact. Every decision written down before the work is finished — with the option you rejected and the evidence behind the call. Close out every session, commit it, start fresh.
+Ground before you act — verify against the live repo, not this document's description of it. Every claim names its source artefact and count. Every decision written down before the work is finished — with the option you rejected and the evidence behind the call. Close out every session, commit it, start fresh.
