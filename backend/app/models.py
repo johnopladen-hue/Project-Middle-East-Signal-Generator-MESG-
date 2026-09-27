@@ -120,6 +120,7 @@ class RawItem(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     source_id: Mapped[int] = mapped_column(ForeignKey("sources.id"))
     fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)  # the item's own time, distinct from fetched_at (I-2)
     original_lang: Mapped[str] = mapped_column(String(64))
     original_text: Mapped[str] = mapped_column(Text)
     working_text: Mapped[str | None] = mapped_column(Text, nullable=True)

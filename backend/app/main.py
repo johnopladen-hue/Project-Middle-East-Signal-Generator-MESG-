@@ -24,6 +24,7 @@ from app.routers.frame_divergence import router as frame_divergence_router
 from app.routers.geo import router as geo_router
 from app.routers.organizations import router as organizations_router
 from app.routers.pipeline import router as pipeline_router
+from app.routers.raw_items import router as raw_items_router
 from app.routers.recipients import router as recipients_router
 from app.routers.regions import router as regions_router
 from app.routers.signals import router as signals_router
@@ -53,6 +54,7 @@ app.include_router(frame_divergence_router)
 app.include_router(geo_router)
 app.include_router(organizations_router)
 app.include_router(pipeline_router)
+app.include_router(raw_items_router)
 app.include_router(recipients_router)
 app.include_router(regions_router)
 app.include_router(signals_router)

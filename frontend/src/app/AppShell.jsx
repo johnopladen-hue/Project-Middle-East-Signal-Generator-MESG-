@@ -1,4 +1,4 @@
-import { Bell, Calendar, LayoutDashboard, LogOut, Map, Menu, Settings, Users } from "lucide-react";
+import { Bell, Calendar, Inbox, LayoutDashboard, LogOut, Map, Menu, Settings, Users } from "lucide-react";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { to: "/weekly", label: "Weekly", icon: Calendar },
   { to: "/organizations", label: "Organizations", icon: Users },
   { to: "/map", label: "Map", icon: Map },
+  { to: "/incoming", label: "Incoming", icon: Inbox },
 ];
 
 function NavLinks({ isAdmin, onNavigate }) {
