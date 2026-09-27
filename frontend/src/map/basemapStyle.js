@@ -8,13 +8,13 @@ const SURFACE = "#f7f8fa";
 const WATER = "#c9d6de";
 const DISPUTED = "#c8912a"; // grade-3 amber - "flagged/uncertain", not a verdict
 
-export function basemapStyle(pmtilesUrl) {
-  // No `glyphs` URL: label text needs a self-hosted glyph server we don't
-  // have yet, and O-3's PROOF requires zero requests to any public server
-  // (verified in the network panel with the internet off) - so this first
-  // cut renders no text labels rather than reaching out for fonts.
+export function basemapStyle(pmtilesUrl, glyphsUrl) {
+  // Self-hosted glyphs (frontend/public/fonts/), not a public font/tile
+  // server - O-3's PROOF requires zero requests to any public server. Only
+  // the "0-255" (basic Latin) range is fetched; English place names only.
   return {
     version: 8,
+    glyphs: glyphsUrl,
     sources: {
       basemap: {
         type: "vector",
@@ -69,6 +69,22 @@ export function basemapStyle(pmtilesUrl) {
         "source-layer": "places",
         minzoom: 4,
         paint: { "circle-radius": 2, "circle-color": INK_MUTED },
+      },
+      {
+        id: "places-labels",
+        type: "symbol",
+        source: "basemap",
+        "source-layer": "places",
+        minzoom: 4,
+        // name:en - English only, matching the one glyph range self-hosted so far.
+        layout: {
+          "text-field": ["get", "name:en"],
+          "text-font": ["Noto Sans Regular"],
+          "text-size": 11,
+          "text-offset": [0, 1],
+          "text-anchor": "top",
+        },
+        paint: { "text-color": INK_MUTED, "text-halo-color": SURFACE, "text-halo-width": 1.2 },
       },
     ],
   };
