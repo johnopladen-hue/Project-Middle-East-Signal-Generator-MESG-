@@ -11,9 +11,9 @@ import { basemapStyle } from "../map/basemapStyle";
 import { useCreateFrameDivergenceNote, useFrameDivergenceNotes, useGeoItems, useRegionPolygon, useRegions } from "../domain/useGeo";
 
 const CENTCOM_BOUNDS = [
-  [34, 29],
-  [42, 37],
-]; // the extracted Levant basemap's own bbox (D-014, findings.md)
+  [23.5, 11],
+  [88.5, 56.5],
+]; // the extracted basemap's own bbox: full 22-country CENTCOM AOR + margin (D-014/D-015, findings.md 2026-09-27)
 
 const PRECISION_RADIUS = { point: 5, city: 5, province: 6, country: 7 };
 
@@ -44,7 +44,7 @@ export function MapView() {
     const map = new MapLibreMap({
       container: mapContainerRef.current,
       style: basemapStyle(
-        `${window.location.origin}/basemap/levant.pmtiles`,
+        `${window.location.origin}/basemap/centcom.pmtiles`,
         `${window.location.origin}/fonts/{fontstack}/{range}.pbf`,
       ),
       bounds: CENTCOM_BOUNDS,
