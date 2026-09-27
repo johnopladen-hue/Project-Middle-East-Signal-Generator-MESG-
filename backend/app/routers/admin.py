@@ -32,6 +32,8 @@ class SourceIn(BaseModel):
     translator_selector: str | None = None
     pair_id: str | None = None
     designation_note: str | None = None
+    verification_note: str | None = None
+    seed_key: str | None = None
 
 
 class SourcePatch(BaseModel):
@@ -48,6 +50,8 @@ class SourcePatch(BaseModel):
     translator_selector: str | None = None
     pair_id: str | None = None
     designation_note: str | None = None
+    verification_note: str | None = None
+    seed_key: str | None = None
 
 
 class SourceOut(BaseModel):
@@ -66,6 +70,8 @@ class SourceOut(BaseModel):
     translator_selector: str | None
     pair_id: str | None
     designation_note: str | None
+    verification_note: str | None
+    seed_key: str | None
 
     model_config = {"from_attributes": True}
 

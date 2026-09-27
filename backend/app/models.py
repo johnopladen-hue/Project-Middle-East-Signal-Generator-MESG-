@@ -108,6 +108,8 @@ class Source(Base):
     translator_selector: Mapped[str | None] = mapped_column(String(255), nullable=True)  # required when source_class == pre_translated (D-018)
     pair_id: Mapped[str | None] = mapped_column(String(64), nullable=True)  # bilingual same-outlet pairs share a pair_id
     designation_note: Mapped[str | None] = mapped_column(String(255), nullable=True)  # e.g. "US SDGT 2006" (D-018)
+    verification_note: Mapped[str | None] = mapped_column(Text, nullable=True)  # authenticity/lag/liveness caveats (D-021, S-2) - distinct from designation_note
+    seed_key: Mapped[str | None] = mapped_column(String(64), unique=True, nullable=True)  # stable upsert identity for the approved-source seeder (D-021, S-2)
 
 
 class RawItem(Base):

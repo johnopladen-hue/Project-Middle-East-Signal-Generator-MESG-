@@ -1,0 +1,466 @@
+# MESG — Approved source set v1 (Owner-approved 2026-09-27; see D-021)
+#
+# Every URL/handle below was verified live on 2026-09-27 through a summarising
+# fetch tool (not raw HTTP) - see MESG-candidate-sources-2026-09-27.md.
+# The collectors MUST re-verify each one from the Owner's machine with a real
+# parser (Ingestion Orders O-5/O-6) and record per-source results in findings.md.
+#
+# Field mapping -> backend/app/models.py Source:
+#   key               stable seed identifier (upsert key; not a model column unless Code adds one)
+#   name, url, language, dialect, region  -> same-named columns
+#   kind              rss | telegram
+#   source_class      native | pre_translated | english_comparison
+#   pair_id           same-outlet (or same-group) bilingual pairs share it
+#   translator_selector  who selects/renders the text when it isn't the original voice
+#   designation_note  US designation/sanction or faction affiliation, as recorded (D-018)
+#   verification_note NEW column (Approved-Sources orders S-2): authenticity/lag caveats
+#   type              legacy column: rss -> "rss", telegram -> "discussion"
+# credibility_prior is deliberately NOT set: it stays at the model default until
+# the analysis order assesses sources on evidence, not on this list's labels.
+
+sources:
+
+  # ── Native RSS — Levantine Arabic (8) ─────────────────────────────────────
+  - key: aljazeera_ar
+    name: Al Jazeera Arabic
+    kind: rss
+    source_class: native
+    language: ar
+    region: Qatar (pan-Arab)
+    url: https://www.aljazeera.net/aljazeerarss/a7c186be-1baa-4bd4-9d80-a84db769f779/73d0e1b4-532f-45ef-b135-bfdff8b8cab9
+    pair_id: aljazeera
+    verification_note: Feed ran ~21h behind at check time; watch lag.
+
+  - key: almanar_ar
+    name: Al-Manar
+    kind: rss
+    source_class: native
+    language: ar
+    dialect: Levantine
+    region: Lebanon
+    url: https://www.almanar.com.lb/rss
+    pair_id: almanar
+    designation_note: Hezbollah-owned. US SDGT (Treasury, 23 Mar 2006, EO 13224). Read-only; never republish (D-018).
+
+  - key: lbci_ar
+    name: LBCI
+    kind: rss
+    source_class: native
+    language: ar
+    dialect: Levantine
+    region: Lebanon
+    url: https://www.lbcgroup.tv/Rss/latest-news/ar
+    pair_id: lbci
+
+  - key: enabbaladi_ar
+    name: Enab Baladi
+    kind: rss
+    source_class: native
+    language: ar
+    dialect: Levantine
+    region: Syria
+    url: https://www.enabbaladi.net/feed
+
+  - key: sana_ar
+    name: SANA
+    kind: rss
+    source_class: native
+    language: ar
+    dialect: Levantine
+    region: Syria
+    url: https://sana.sy/feed/
+    verification_note: Syrian state agency, now the post-Assad transitional government's voice; review bias labels periodically.
+
+  - key: qudsn_ar
+    name: Quds News Network
+    kind: rss
+    source_class: native
+    language: ar
+    dialect: Levantine
+    region: Palestine
+    url: https://qudsn.co/feed
+    verification_note: Activist network, commonly described as Hamas-leaning; no US designation found.
+
+  - key: roya_ar
+    name: Roya News
+    kind: rss
+    source_class: native
+    language: ar
+    dialect: Levantine
+    region: Jordan
+    url: https://royanews.tv/rss
+
+  - key: alarabiya_ar
+    name: Al Arabiya
+    kind: rss
+    source_class: native
+    language: ar
+    region: Saudi Arabia (pan-Arab)
+    url: https://www.alarabiya.net/feed/rss2/ar.xml
+    pair_id: alarabiya
+
+  # ── Native RSS — Persian (3) ───────────────────────────────────────────────
+  # Iran-hosted regime outlets' RSS was unreachable from outside Iran; the
+  # regime voice comes in via Telegram (farsna, irna_1313, akhbarefori).
+  - key: iranintl_fa
+    name: Iran International (Persian)
+    kind: rss
+    source_class: native
+    language: fa
+    region: Iran (diaspora, London)
+    url: https://www.iranintl.com/fa/feed
+    pair_id: iranintl
+
+  - key: iranwire_fa
+    name: IranWire (Persian)
+    kind: rss
+    source_class: native
+    language: fa
+    region: Iran (diaspora)
+    url: https://iranwire.com/fa/feed/
+
+  - key: hrana_fa
+    name: HRANA
+    kind: rss
+    source_class: native
+    language: fa
+    region: Iran (diaspora human-rights NGO)
+    url: https://www.hra-news.org/feed/
+
+  # ── Native RSS — Hebrew (5) ────────────────────────────────────────────────
+  - key: ynet_he
+    name: Ynet
+    kind: rss
+    source_class: native
+    language: he
+    region: Israel
+    url: https://www.ynet.co.il/Integration/StoryRss2.xml
+    verification_note: English pair (Ynetnews) held back - it lagged 2-3 days on 2026-09-27 (possibly Sukkot); recheck in October.
+
+  - key: maariv_he
+    name: Maariv
+    kind: rss
+    source_class: native
+    language: he
+    region: Israel
+    url: https://www.maariv.co.il/Rss/RssChadashot
+    pair_id: maariv_jpost_group
+    verification_note: Pair with Jerusalem Post is same GROUP (common owner), not the same newsroom.
+
+  - key: israelhayom_he
+    name: Israel Hayom
+    kind: rss
+    source_class: native
+    language: he
+    region: Israel
+    url: https://www.israelhayom.co.il/rss.xml
+    pair_id: israelhayom
+
+  - key: inn_he
+    name: Arutz 7 (Hebrew)
+    kind: rss
+    source_class: native
+    language: he
+    region: Israel
+    url: https://www.inn.co.il/Rss.aspx
+    pair_id: inn
+
+  - key: globes_he
+    name: Globes
+    kind: rss
+    source_class: native
+    language: he
+    region: Israel
+    url: https://www.globes.co.il/webservice/rss/rssfeeder.asmx/FeederNode?iID=2
+
+  # ── English comparison — baseline outlets (6) ──────────────────────────────
+  - key: aljazeera_en
+    name: Al Jazeera English
+    kind: rss
+    source_class: english_comparison
+    language: en
+    region: Qatar
+    url: https://www.aljazeera.com/xml/rss/all.xml
+    pair_id: aljazeera
+    translator_selector: Al Jazeera's own English desk
+
+  - key: npr_world
+    name: NPR World
+    kind: rss
+    source_class: english_comparison
+    language: en
+    region: United States
+    url: https://feeds.npr.org/1004/rss.xml
+
+  - key: fox_world
+    name: Fox News World
+    kind: rss
+    source_class: english_comparison
+    language: en
+    region: United States
+    url: https://moxie.foxnews.com/google-publisher/world.xml
+
+  - key: cbs_world
+    name: CBS News World
+    kind: rss
+    source_class: english_comparison
+    language: en
+    region: United States
+    url: https://www.cbsnews.com/latest/rss/world
+
+  - key: mee
+    name: Middle East Eye
+    kind: rss
+    source_class: english_comparison
+    language: en
+    region: United Kingdom
+    url: https://www.middleeasteye.net/rss
+
+  - key: almonitor
+    name: Al-Monitor
+    kind: rss
+    source_class: english_comparison
+    language: en
+    region: United States
+    url: https://www.al-monitor.com/rss
+    verification_note: Feed contains duplicate items; rely on dedupe.
+
+  # ── English comparison — outlets' own English editions (8) ────────────────
+  - key: almanar_en
+    name: Al-Manar English
+    kind: rss
+    source_class: english_comparison
+    language: en
+    region: Lebanon
+    url: https://english.almanar.com.lb/rss
+    pair_id: almanar
+    translator_selector: Al-Manar's own English desk
+    designation_note: Hezbollah-owned. US SDGT (Treasury, 23 Mar 2006, EO 13224). Read-only; never republish (D-018).
+
+  - key: lbci_en
+    name: LBCI English
+    kind: rss
+    source_class: english_comparison
+    language: en
+    region: Lebanon
+    url: https://www.lbcgroup.tv/Rss/latest-news/en
+    pair_id: lbci
+    translator_selector: LBCI's own English desk
+    verification_note: Feed's own language tag wrongly says ar-LB; items are English.
+
+  - key: alarabiya_en
+    name: Al Arabiya English
+    kind: rss
+    source_class: english_comparison
+    language: en
+    region: Saudi Arabia
+    url: https://english.alarabiya.net/feed/rss2/en.xml
+    pair_id: alarabiya
+    translator_selector: Al Arabiya's own English desk
+
+  - key: iranintl_en
+    name: Iran International English
+    kind: rss
+    source_class: english_comparison
+    language: en
+    region: Iran (diaspora, London)
+    url: https://www.iranintl.com/en/feed
+    pair_id: iranintl
+    translator_selector: Iran International's own English desk
+
+  - key: israelhayom_en
+    name: Israel Hayom English
+    kind: rss
+    source_class: english_comparison
+    language: en
+    region: Israel
+    url: https://www.israelhayom.com/feed/
+    pair_id: israelhayom
+    translator_selector: Israel Hayom's own English desk (smaller, curated edition)
+
+  - key: inn_en
+    name: Israel National News (English)
+    kind: rss
+    source_class: english_comparison
+    language: en
+    region: Israel
+    url: https://www.israelnationalnews.com/Rss.aspx
+    pair_id: inn
+    translator_selector: Arutz 7's own English desk
+
+  - key: jpost
+    name: Jerusalem Post
+    kind: rss
+    source_class: english_comparison
+    language: en
+    region: Israel
+    url: https://www.jpost.com/rss/rssfeedsfrontpage.aspx
+    pair_id: maariv_jpost_group
+    translator_selector: Separate newsroom in the same group as Maariv
+    verification_note: Same-group pair, not same newsroom.
+
+  - key: presstv
+    name: Press TV
+    kind: rss
+    source_class: english_comparison
+    language: en
+    region: Iran (state, IRIB)
+    url: https://www.presstv.co.uk/rss.xml
+    translator_selector: Iranian state broadcaster's outward-facing English service
+    designation_note: Iranian state (IRIB). IRIB reported on OFAC SDN list - NOT confirmed; verify before relying on this label.
+    verification_note: presstv.ir 302-redirects to this mirror domain.
+
+  # ── Telegram — Arabic (5) ──────────────────────────────────────────────────
+  - key: tg_almayadeen
+    name: Al Mayadeen | Breaking
+    kind: telegram
+    source_class: native
+    language: ar
+    dialect: Levantine
+    region: Lebanon (pan-Arab)
+    url: https://t.me/s/almayadeen
+    verification_note: Pro-"Axis of Resistance"; no US designation found. ~215 posts/day. Its RSS returns 403, so Telegram is the only path.
+
+  - key: tg_ajmubasher
+    name: Al Jazeera Mubasher
+    kind: telegram
+    source_class: native
+    language: ar
+    region: Qatar (pan-Arab)
+    url: https://t.me/s/ajmubasher
+
+  - key: tg_palinfo
+    name: Palestinian Information Center
+    kind: telegram
+    source_class: native
+    language: ar
+    dialect: Levantine
+    region: Palestine
+    url: https://t.me/s/palinfo
+    designation_note: Hamas-affiliated media (no US designation found). Flag as faction; read-only (D-018).
+
+  - key: tg_wafagency
+    name: WAFA Agency (Telegram)
+    kind: telegram
+    source_class: native
+    language: ar
+    dialect: Levantine
+    region: Palestine
+    url: https://t.me/s/WAFAgency
+    verification_note: AUTHENTICITY UNCONFIRMED - included by Owner ruling 2026-09-27. Low subscriber count (~6K) for an official agency. Checked wafa.ps 2026-09-27 (HTTP 200) for a Telegram link - found none anywhere on the homepage HTML, no mention of "telegram" at all. Inconclusive, not disproof (official sites don't always list every channel), but still unconfirmed - treat with caution.
+
+  - key: tg_alhadath
+    name: Al-Hadath (Telegram)
+    kind: telegram
+    source_class: native
+    language: ar
+    region: Saudi Arabia (pan-Arab)
+    url: https://t.me/s/alhadath
+    verification_note: AUTHENTICITY UNCONFIRMED - included by Owner ruling 2026-09-27. Describes itself as an "interactive channel"; may be unofficial. alhadath.net returned HTTP 403 (bot-blocked) 2026-09-27, same pattern as other Arabic-language .net sites this project has hit - could not check for a Telegram link. Still unconfirmed.
+
+  # ── Telegram — Persian (6) ─────────────────────────────────────────────────
+  - key: tg_farsna
+    name: Fars News Agency
+    kind: telegram
+    source_class: native
+    language: fa
+    region: Iran
+    url: https://t.me/s/farsna
+    designation_note: IRGC-affiliated. OFAC SDN (15 Sep 2023, EO 13553, Iran human-rights program) - not FTO/SDGT. Read-only (D-018).
+    verification_note: Very high volume (~20/hour).
+
+  - key: tg_irna
+    name: IRNA
+    kind: telegram
+    source_class: native
+    language: fa
+    region: Iran
+    url: https://t.me/s/irna_1313
+
+  - key: tg_akhbarefori
+    name: Akhbar-e Fori
+    kind: telegram
+    source_class: native
+    language: fa
+    region: Iran
+    url: https://t.me/s/akhbarefori
+    verification_note: Largest domestic Iranian news channel (~4.3M subs); very high volume (~17/hour).
+
+  - key: tg_bbcpersian
+    name: BBC Persian
+    kind: telegram
+    source_class: native
+    language: fa
+    region: United Kingdom (foreign broadcaster)
+    url: https://t.me/s/bbcpersian
+
+  - key: tg_vahidonline
+    name: Vahid Online
+    kind: telegram
+    source_class: native
+    language: fa
+    region: Iran (diaspora curator)
+    url: https://t.me/s/VahidOnline
+    verification_note: Single-person curator of citizen video from inside Iran; high signal for unrest, single point of failure.
+
+  - key: tg_radiofarda
+    name: Radio Farda
+    kind: telegram
+    source_class: native
+    language: fa
+    region: Iran (US-government funded, RFE/RL)
+    url: https://t.me/s/radiofarda
+
+  # ── Telegram — Israeli perspectives (6) ────────────────────────────────────
+  - key: tg_abualiexpress
+    name: Abu Ali Express
+    kind: telegram
+    source_class: native
+    language: he
+    region: Israel
+    url: https://t.me/s/abualiexpress
+    translator_selector: Monitors and renders Arab-side channels into Hebrew - its renderings of Arab sources are a selected, framed translation (D-018).
+    verification_note: Pro-IDF framing; publicly reported past IDF links.
+
+  - key: tg_amitsegal
+    name: Amit Segal
+    kind: telegram
+    source_class: native
+    language: he
+    region: Israel
+    url: https://t.me/s/amitsegal
+
+  - key: tg_hamoked
+    name: HaMoked News
+    kind: telegram
+    source_class: native
+    language: he
+    region: Israel
+    url: https://t.me/s/hamoked_il
+
+  - key: tg_pikudhaoref
+    name: Home Front Command (Pikud HaOref)
+    kind: telegram
+    source_class: native
+    language: he
+    region: Israel
+    url: https://t.me/s/PikudHaOref_all
+    verification_note: Event-driven official alert channel; silence between events is normal, not a liveness failure. Last event seen 21 Sep 2026, matching the Tzeva Adom mirror.
+
+  - key: tg_manniefabian
+    name: Mannie's War Room
+    kind: telegram
+    source_class: native
+    language: en
+    region: Israel
+    url: https://t.me/s/manniefabian
+    verification_note: Added by Owner 2026-09-27. Emanuel Fabian, Times of Israel military correspondent. In-region Israeli voice publishing in English, so no translation needed. Latest post confirmed by embed #59200, 20 Sep 2026; plain preview served a stale snapshot (cache-bust).
+
+  - key: tg_idfofficial
+    name: Israel Defense Forces (official, English)
+    kind: telegram
+    source_class: native
+    language: en
+    region: Israel
+    url: https://t.me/s/idfofficial
+    verification_note: Added 2026-09-27 as an Israeli perspective. Official checkmark, ~160K subs; the IDF's own English voice. Latest post confirmed live 2026-09-27 via embed (post #19278, 2026-09-27T10:41:24 UTC).
