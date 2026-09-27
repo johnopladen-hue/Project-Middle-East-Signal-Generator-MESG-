@@ -86,7 +86,7 @@ HarvestResult(actors=(...), relationships=(...))
 
 ## Map Interface (D-014, D-015)
 
-**Self-hosted, not a public tile server.** The basemap is a self-hosted OSM-derived vector tileset (Protomaps/PMTiles, ODbL, `frontend/public/basemap/levant.pmtiles` - a genuine 2.9 MB extract of the live daily planet build, pulled via HTTP range requests, not the full 138 GB file; see `findings.md`, 2026-09-13). MapLibre GL JS (BSD-3) renders it; nothing in the render path calls `tile.openstreetmap.org`, Google, or Mapbox. `© OpenStreetMap contributors` attribution is required and shown on the map (`frontend/src/map/basemapStyle.js`).
+**Self-hosted, not a public tile server.** The basemap is a self-hosted OSM-derived vector tileset (Protomaps/PMTiles, ODbL, `frontend/public/basemap/centcom.pmtiles` - a genuine 3.2 MB extract of the live daily planet build covering the full 22-country CENTCOM AOR at zoom 0-5, pulled via HTTP range requests, not the full 138 GB file; see `findings.md`, 2026-09-27). MapLibre GL JS (BSD-3) renders it; nothing in the render path calls `tile.openstreetmap.org`, Google, or Mapbox. `© OpenStreetMap contributors` attribution is required and shown on the map (`frontend/src/map/basemapStyle.js`).
 
 **Cartographic stance — contested boundaries are shown as contested, not silently resolved (O-4).** The basemap's `boundaries` vector layer carries OSM's own `disputed` field; MESG's style renders `disputed=true` features distinctly (dashed, amber) rather than as an ordinary international border. This is the data's own honesty, not a position MESG invented — see `basemapStyle.js`'s `boundaries-disputed` layer.
 
