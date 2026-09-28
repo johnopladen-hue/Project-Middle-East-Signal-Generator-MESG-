@@ -15,6 +15,7 @@ import { AdminSources } from "./routes/admin/Sources.jsx";
 import { ComingSoon } from "./routes/ComingSoon.jsx";
 import { Dashboard } from "./routes/Dashboard.jsx";
 import { Gallery } from "./routes/Gallery.jsx";
+import { Incoming } from "./routes/Incoming.jsx";
 import { Login } from "./routes/Login.jsx";
 import { MapView } from "./routes/MapView.jsx";
 import { OrganizationDetail } from "./routes/OrganizationDetail.jsx";
@@ -49,6 +50,7 @@ createRoot(document.getElementById("root")).render(
                 <Route path="/organizations" element={<Organizations />} />
                 <Route path="/organizations/:id" element={<OrganizationDetail />} />
                 <Route path="/map" element={<MapView />} />
+                <Route path="/incoming" element={<Incoming />} />
                 <Route
                   path="/admin/sources"
                   element={
