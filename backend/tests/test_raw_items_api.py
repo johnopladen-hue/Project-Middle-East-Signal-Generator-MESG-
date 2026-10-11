@@ -117,3 +117,44 @@ def test_silent_sources_lists_active_ingestible_sources_with_no_recent_collectio
     client = TestClient(app)
     body = client.get("/raw-items").json()
     assert "Never Collected" in body["silent_sources"]
+
+
+def test_telegram_items_come_back_with_designation_and_verification_notes_intact():
+    """Producer -> consumer contract (U-1): items the Telegram collector stores
+    for the real approved tg_farsna (designated) and tg_wafagency
+    (authenticity unconfirmed) rows, from genuine captured pages, are served
+    by GET /raw-items?kind=telegram with both sources' notes unchanged."""
+    from pathlib import Path
+
+    from app.ingestion.telegram_collector import FIRST_PAGE_BEFORE, collect_source
+    from app.sources.seed_approved import load_sources, seed_approved
+
+    fixtures = Path(__file__).parent / "fixtures"
+    pages = {
+        "tg_farsna": (fixtures / "telegram_farsna_fa.html").read_text(encoding="utf-8"),
+        "tg_wafagency": (fixtures / "telegram_wafagency_ar.html").read_text(encoding="utf-8"),
+    }
+    no_posts = (fixtures / "telegram_no_posts_found.html").read_text(encoding="utf-8")
+    approved = {row["key"]: row for row in load_sources()}
+    oct_11_evening = datetime(2026, 10, 11, 16, 0, tzinfo=timezone.utc)
+
+    with SessionLocal() as db:
+        seed_approved(db)
+        source_ids = {}
+        for key, page in pages.items():
+            source = db.query(Source).filter_by(seed_key=key).one()
+            collect_source(db, source, now=oct_11_evening,
+                           fetch=lambda handle, before, page=page: page if before == FIRST_PAGE_BEFORE else no_posts)
+            source_ids[key] = source.id
+
+    client = TestClient(app)
+    served = {}
+    for key, source_id in source_ids.items():
+        body = client.get("/raw-items", params={"kind": "telegram", "source_id": source_id}).json()
+        assert body["total"] >= 1
+        served[key] = body["items"][0]
+
+    assert served["tg_farsna"]["designation_note"] == approved["tg_farsna"]["designation_note"]
+    assert served["tg_farsna"]["verification_note"] == approved["tg_farsna"]["verification_note"]
+    assert served["tg_wafagency"]["verification_note"] == approved["tg_wafagency"]["verification_note"]
+    assert served["tg_wafagency"]["url"] == "https://t.me/WAFAgency/101380"
