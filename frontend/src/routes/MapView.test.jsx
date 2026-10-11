@@ -205,6 +205,14 @@ describe("MapView (D-014, D-015)", () => {
     expect(attribution.control.options).toEqual({ compact: false });
   });
 
+  it("caps zoom so the z5 basemap is never stretched into jagged, empty detail", () => {
+    serveMapApis();
+    renderMap();
+
+    const [map] = fake.state.maps;
+    expect(map.options.maxZoom).toBeLessThanOrEqual(6.5);
+  });
+
   it("overlays the real CENTCOM polygon as a fill + outline", async () => {
     serveMapApis();
     renderMap();

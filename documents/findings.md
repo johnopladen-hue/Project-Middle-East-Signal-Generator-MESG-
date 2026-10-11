@@ -228,3 +228,21 @@ For each entry:
 - **Context:** The Owner, reading `/incoming`: "I'm only seeing news items from WAFA … I'm trying to get a much more diverse cross section of reporting."
 - **Finding:** A sort problem, not a collection problem. The dev DB held items from **43 sources**, but `GET /raw-items` sorted by `fetched_at`. A collection run fetches sources one after another, Telegram alphabetically, so the last channel fetched (WAFA, 87 posts) had the newest fetch times and filled the entire first page: **50 of 50 items**. Sorted by the item's own time (`coalesce(published_at, fetched_at)`), the same first 50 came from **18 sources** spanning Israeli, Iranian (state and opposition), Lebanese, Syrian, Palestinian, Jordanian and English-comparison outlets.
 - **Implication:** `/raw-items` now orders by publication time, falling back to fetch time, then id (test added and mutation-checked; reverting to `fetched_at` fails it). Fetch time says when MESG ran, not when anything happened, so it should never be the order a reader sees. Volume skew remains: Fars/IRNA/Akhbar-e Fori/Al Mayadeen/HaMoked post many times more than Amit Segal or Vahid Online, so a busy hour can still lean toward the prolific channels. If that bothers the Owner in daily use, the remedies are U-4's source/kind/language filters, or a later per-source balancing option. That is a Planner decision; nothing was silently capped.
+
+- **Date:** 2026-10-11
+- **Context:** The Owner asked why the map renders so poorly. I decoded the self-hosted `centcom.pmtiles` (z2–z5, every tile in the AOR bbox) with `pmtiles` + `@mapbox/vector-tile` and compared it with `basemapStyle.js`.
+- **Finding:** Four causes, all in configuration or data, not a rendering bug:
+  1. **The extract stops at z5** (PMTiles header `maxzoom 5`; the 2026-09-27 size trade-off), but the map had no `maxZoom`. Zooming past ~6 stretched the z5 data into jagged borders and empty detail.
+  2. **Labels started only at z4**, and the opening whole-AOR view is ~z2–3, so the first screen had no names. The data does carry country places from z2.
+  3. **The style never drew the extract's `earth` layer**, so land was the same colour as the page background.
+  4. **Glyphs were too narrow.** Only 0–255 was self-hosted, but 16 characters used by real `name:en` values fall outside it (ı ğ ş İ ș ț ū č … in e.g. Turkish and Azerbaijani names). Separately, 130 places carry no `name:en` (126 Latin-script, e.g. Surat; 4 Cyrillic in Kazakhstan). **Every in-AOR place has an English name**, so Arabic/Hebrew glyphs and MapLibre's RTL shaping plugin are *not* needed for this map.
+
+  Also found: **a real upstream data defect.** Türkiye's `name:en` is the single letter `"T"` at every zoom in the 2026-09-27 Protomaps build; it is the only one-character English name in the extract.
+- **Implication:** Fix A (this PR) changes only styling and glyphs, with no new tile data:
+  - zoom is capped at 6.5;
+  - country labels show from the opening view, and city labels from z4, thinned by the data's own `min_zoom`;
+  - land fill comes from `earth`, plus urban areas, region borders and stronger country borders;
+  - glyph ranges 256–511, 512–767 and 1024–1279 are added from the same source as the existing 0–255. That file's sha256 matches the live `protomaps/basemaps-assets` copy byte for byte; the font is Noto Sans Regular, OFL.
+  - Labels use English, falling back to the local name when the English name is missing *or one character long*. That is a general rule rather than a Türkiye special case, so it also covers future builds with the same defect.
+
+  The map is still a **country-level** map. City and road detail needs higher-zoom tiles for the core theatre (option B: AOR z0–5 plus Levant/Iraq/Iran/Gulf at roughly z0–9, est. tens of MB). That is open for the Planner under D-014 (map interface technology).

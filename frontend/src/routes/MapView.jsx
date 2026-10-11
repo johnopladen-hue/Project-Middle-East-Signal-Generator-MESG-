@@ -7,7 +7,7 @@ import { Button } from "../components/primitives/Button";
 import { Card } from "../components/primitives/Card";
 import { ErrorState } from "../components/primitives/ErrorState";
 import { Skeleton } from "../components/primitives/Skeleton";
-import { basemapStyle } from "../map/basemapStyle";
+import { BASEMAP_MAX_ZOOM, basemapStyle } from "../map/basemapStyle";
 import { useCreateFrameDivergenceNote, useFrameDivergenceNotes, useGeoItems, useRegionPolygon, useRegions } from "../domain/useGeo";
 
 const CENTCOM_BOUNDS = [
@@ -48,6 +48,7 @@ export function MapView() {
         `${window.location.origin}/fonts/{fontstack}/{range}.pbf`,
       ),
       bounds: CENTCOM_BOUNDS,
+      maxZoom: BASEMAP_MAX_ZOOM, // the tiles stop at z5; deeper zoom only stretches them
       attributionControl: false,
     });
     map.addControl(new AttributionControl({ compact: false }));
