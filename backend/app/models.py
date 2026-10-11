@@ -130,6 +130,21 @@ class RawItem(Base):
     source: Mapped[Source] = relationship()
 
 
+class CollectorCursor(Base):
+    """Per-source "newest item already collected" marker for collectors that
+    page backwards (Telegram, U-1 of the Usable-Today orders). A separate
+    table rather than a `Source` column so `create_all` adds it to an
+    existing database with no reset (Standing Order 7). Advanced only after
+    the items it covers have been committed."""
+
+    __tablename__ = "collector_cursors"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    source_id: Mapped[int] = mapped_column(ForeignKey("sources.id"), unique=True)
+    last_item_id: Mapped[str] = mapped_column(String(64))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
 class Story(Base):
     __tablename__ = "stories"
 

@@ -132,3 +132,53 @@ For each entry:
 - **Context:** Whether to add X/Twitter as a collection channel in `MESG-Orders-Usable-Today-v0.1.md` (U-0). Owner ruling 2026-10-11: **defer X; when revisited, journalists/OSINT accounts first.**
 - **Finding:** Evidence gathered by the Planner on 2026-10-11 (not re-fetched by Code): X's official pricing page (`docs.x.com/x-api/getting-started/pricing`) lists pay-per-use at **$0.005 per post read** and **$0.010 per user read**, with a 24-hour UTC dedup window and a monthly post-read cap. Secondary sources state new developers get no free tier and that the Basic/Pro plans are closed to new signups. Third-party scraper APIs were considered and rejected under [D-018](decisions/D-018-collection-posture.md) (collection posture), because they scrape against X's terms.
 - **Implication:** No new D-number — D-018 (collection posture) already excludes X, and nothing about it changes today. When X is revisited, price it against D-016's $20/month cap at real read volume for a short list of journalist/OSINT accounts before anything else, and use only the official API.
+
+- **Date:** 2026-10-11
+- **Context:** U-1. Captured real `t.me/s/` pages from 11 approved channels (MESGBot/0.1, 2 s spacing, `?before=99999999`) to build the Telegram collector's fixtures, then checked the order's "as last seen" selectors against them.
+- **Finding:** The order's selectors had the right names but were wrong in two places that matter:
+  1. **Reply posts carry the quoted message's text under the same class.** That text sits in `.tgme_widget_message_text` inside `.tgme_widget_message_reply`, and comes *before* the post's own text in document order. Taking the first match would store someone else's words as this post.
+  2. **Photo and video captions sit inside `.media_supported_cont`,** not directly under the bubble. A "direct child" rule silently turned every captioned photo into "media-only". This was caught on Fars 467728/467729, before any real run.
+
+  Smaller points:
+  - Video posts carry a second `<time>` element (the duration, with no `datetime`), so the post time must come from `a.tgme_widget_message_date time[datetime]`.
+  - `data-post` keeps the channel's own casing: `ajMubasher/510431` for the handle `ajmubasher`.
+  - A request past a channel's first post returns a real "No posts found" block. It was captured as a fixture rather than invented.
+  - Across all 189 sampled posts, every one had a timestamp, 1 was media-only and 3 were forwarded.
+- **Implication:** `telegram_collector.py` now takes the first `.tgme_widget_message_text` in the bubble that is not inside a reply quote. The Fars photo-reply fixture is the regression test. The selector list in an order is only a starting hypothesis. Parsing every captured page, not just the fixtures, is what surfaced the caption case.
+
+- **Date:** 2026-10-11
+- **Context:** U-1 real run of `python -m app.ingest --once`, 2026-10-11T15:28:00Z to 15:33:19Z, against `backend/mesg_dev.db`. The new `collector_cursors` table was created by `create_all`; no reset was needed. The PR #32 description recorded the expectation before the run (Keel P8): ~1,500–2,000 new Telegram items, with `gap_possible` on ~5–7 high-volume channels.
+- **Finding:** **Telegram: 17 channels, 285.5 s, fetched 1,658, new 1,650, skipped_media_only 8, gap_possible 6, stale_snapshot 0, failures 0.**
+
+  | Channel | Fetched | New | Media-only skipped | `gap_possible` |
+  |---|---|---|---|---|
+  | Abu Ali Express | 76 | 76 | 0 | – |
+  | Akhbar-e Fori | 170 | 170 | 0 | **gap** |
+  | Al Jazeera Mubasher | 126 | 126 | 0 | – |
+  | Al Mayadeen | 200 | 200 | 0 | **gap** |
+  | Al-Hadath | 88 | 88 | 0 | – |
+  | Amit Segal | 28 | 27 | 1 | – |
+  | BBC Persian | 131 | 131 | 0 | – |
+  | Fars | 159 | 156 | 3 | **gap** |
+  | HaMoked | 200 | 200 | 0 | **gap** |
+  | Pikud HaOref | 2 | 2 | 0 | – |
+  | IRNA | 161 | 161 | 0 | **gap** |
+  | IDF (English) | 10 | 10 | 0 | – |
+  | Mannie's War Room | 0 | 0 | 0 | – |
+  | Palinfo | 155 | 154 | 1 | **gap** |
+  | Radio Farda | 46 | 46 | 0 | – |
+  | Vahid Online | 16 | 16 | 0 | – |
+  | WAFA | 90 | 87 | 3 | – |
+
+  - Mannie's War Room returned 0 because its newest post (2026-10-07 02:17 UTC) is outside the 48h window. The channel is quiet, not broken.
+  - By language: ar 655, fa 680, he 305, en 10.
+  - The 1,650 total sits inside the prediction, and `gap_possible` hit exactly the six channels named in advance.
+  - **RSS in the same run: 30 sources, 637 new, 4 failures.** Al Arabiya (ar and en) and Enab Baladi still return HTTP 403. **Maariv now succeeds** (20 items; it returned 403 on 2026-09-27). **Press TV failed with a ReadTimeout**, which is new and possibly transient.
+  - Dev DB totals after the run: 1,349 RSS items and 1,650 Telegram items.
+  - Stored text was checked directly in SQLite and through the API: correct Unicode, 0 mojibake rows. A garbled console print was only a Windows cp1252 pipe artifact.
+- **Implication:**
+  - The first Telegram run is deliberately capped at 10 pages, so the six gap channels hold only their newest ~150–200 posts, not 48 hours. That is recorded per channel, not hidden.
+  - Once U-3 collects every 15 minutes, no channel should need more than 1–2 pages per run, so `gap_possible` should become rare. If it persists on Fars, Al Mayadeen or HaMoked, that is evidence for raising the cap for those channels specifically.
+  - Persian regime-side voices (Fars, IRNA, Akhbar-e Fori) now appear in MESG for the first time (D-018 collection posture: Iran-hosted RSS is unreachable).
+  - There is no evidence against A-009 (Telegram web preview stays keyless): 0 blocks and 0 stale snapshots across 17 channels.
+  - Re-check Press TV's timeout and Maariv's recovery on the next run before changing either `verification_note`.

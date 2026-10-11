@@ -58,6 +58,11 @@ class CollectResult:
     new: int = 0
     deduped: int = 0
     error: str | None = None
+    # Telegram-only categories (U-1). Each is a recorded outcome, never a
+    # silent truncation (Keel P11); RSS leaves them at their defaults.
+    skipped_media_only: int = 0
+    gap_possible: bool = False
+    stale_snapshot: bool = False
 
 
 def _content_hash(url: str, title: str) -> str:
