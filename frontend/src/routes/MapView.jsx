@@ -1,5 +1,15 @@
-import { AttributionControl, Map as MapLibreMap, Marker, NavigationControl, Popup, addProtocol, removeProtocol } from "maplibre-gl";
+import {
+  AttributionControl,
+  Map as MapLibreMap,
+  Marker,
+  NavigationControl,
+  Popup,
+  addProtocol,
+  removeProtocol,
+  setWorkerUrl,
+} from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { Protocol } from "pmtiles";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +24,15 @@ const CENTCOM_BOUNDS = [
   [23.5, 11],
   [88.5, 56.5],
 ]; // the extracted basemap's own bbox: full 22-country CENTCOM AOR + margin (D-014/D-015, findings.md 2026-09-27)
+
+// MapLibre does all tile decoding in a Web Worker it locates relative to its
+// own module. When Vite pre-bundles maplibre-gl into node_modules/.vite/deps/
+// (which Vite 8 did on 2026-09-28 despite `optimizeDeps.exclude`), that
+// relative URL 404s and the map silently shows only the background and DOM
+// markers (findings.md, 2026-10-11). Pointing MapLibre at the real worker file
+// through Vite's `?worker&url` import (which bundles the worker together with
+// the shared chunk it imports) works in dev and in a production build.
+setWorkerUrl(maplibreWorkerUrl);
 
 const PRECISION_RADIUS = { point: 5, city: 5, province: 6, country: 7 };
 

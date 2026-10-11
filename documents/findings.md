@@ -246,3 +246,19 @@ For each entry:
   - Labels use English, falling back to the local name when the English name is missing *or one character long*. That is a general rule rather than a Türkiye special case, so it also covers future builds with the same defect.
 
   The map is still a **country-level** map. City and road detail needs higher-zoom tiles for the core theatre (option B: AOR z0–5 plus Levant/Iraq/Iran/Gulf at roughly z0–9, est. tens of MB). That is open for the Planner under D-014 (map interface technology).
+
+- **Date:** 2026-10-11
+- **Context:** After the legibility fix above, the Owner reported the map was "just a blue background with some yellow circles, no detail whatsoever". That correction matters: the entry above says the poor rendering was "not a rendering bug". **That was wrong.** It was written from the style and the tile data alone, without looking at a rendered page.
+- **Finding:** I drove a headless Edge (local, `--headless=new`, DevTools protocol; not the Chrome extension), attached to its worker targets as well as the page, and found the real cause. MapLibre's tile worker was requested from `/node_modules/.vite/deps/maplibre-gl-worker.mjs` and got **HTTP 404**.
+  - Vite 8.2.2's dev server had pre-bundled `maplibre-gl` into `.vite/deps/` despite `optimizeDeps.exclude: ["maplibre-gl"]`. The cache was rebuilt 2026-09-28 08:20, ten seconds after the merge pull touched `vite.config.js`. MapLibre locates its worker relative to its own module, so the pre-bundled copy pointed at a file that isn't there.
+  - With no worker, no tile is ever decoded. The page console shows **no error at all** (only the worker target does), and the page shows exactly the background colour plus DOM markers — the same symptom `vite.config.js`'s own comment describes from PR #24.
+  - The Owner's earlier "renders poorly" was almost certainly this same failure on the old grey background, not the style. The style issues above were real too, but secondary.
+  - Since PR #27's check, nobody had looked at a rendered map; the component tests use a MapLibre fake and cannot see this.
+- **Implication:**
+  - **Fix:** `MapView.jsx` calls MapLibre's `setWorkerUrl()` with `maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url`, and `vite.config.js` sets `worker.format: "es"`, so Vite bundles the worker with the shared chunk it imports.
+  - A plain `?url` import was tried first. It worked in dev, but a production build emitted a 19 kB worker importing a `./maplibre-gl-shared.mjs` that the build never wrote. The `?worker&url` build emits one self-contained 507 kB worker.
+  - **Verified rendered in headless Edge on both the dev server and a production build (`vite preview`):** land, sea, borders, country labels (including TÜRKIYE), the CENTCOM outline, and city labels (Aleppo, Damascus, Kirkuk, Tabriz) plus the dashed disputed Golan line when zoomed in.
+  - A regression test pins that MapView sets the worker URL.
+  - Lessons: don't trust `optimizeDeps.exclude` to stay honoured across Vite upgrades or cache rebuilds. For map changes, check a rendered page (the headless DevTools-protocol method works on this machine), not just the style.
+  - Also noticed: the app loads IBM Plex fonts from `fonts.googleapis.com`. That is a public server, which conflicts with D-014's "zero requests to any public server" posture for the map page. Not fixed here; open item.
+  - On the map, the "Unlocated" panel covers Lebanon/Israel/Egypt in the default view (cosmetic, open item).

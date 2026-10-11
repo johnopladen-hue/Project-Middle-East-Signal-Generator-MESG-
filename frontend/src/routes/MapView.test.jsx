@@ -105,6 +105,9 @@ vi.mock("maplibre-gl", () => ({
   NavigationControl: class NavigationControl extends fake.FakeControl {},
   addProtocol: (name) => fake.state.protocols.added.push(name),
   removeProtocol: (name) => fake.state.protocols.removed.push(name),
+  setWorkerUrl: (url) => {
+    fake.state.workerUrl = url;
+  },
 }));
 vi.mock("maplibre-gl/dist/maplibre-gl.css", () => ({}));
 vi.mock("pmtiles", () => ({ Protocol: class Protocol { tile() {} } }));
@@ -203,6 +206,12 @@ describe("MapView (D-014, D-015)", () => {
     const attribution = map.controls.find((c) => c.control.constructor.name === "AttributionControl");
     expect(attribution).toBeDefined();
     expect(attribution.control.options).toEqual({ compact: false });
+  });
+
+  it("points MapLibre at its real worker file, so tiles decode even when Vite pre-bundles the library", () => {
+    // Regression (findings.md, 2026-10-11): the pre-bundled copy looked for its
+    // worker under node_modules/.vite/deps/ and got a 404 - background only.
+    expect(fake.state.workerUrl).toMatch(/maplibre-gl\/dist\/maplibre-gl-worker\.mjs/);
   });
 
   it("caps zoom so the z5 basemap is never stretched into jagged, empty detail", () => {
