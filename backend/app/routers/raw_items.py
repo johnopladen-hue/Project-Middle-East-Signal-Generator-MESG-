@@ -13,13 +13,20 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import RawItem, Source
+from app.models import RawItem, Source, TranslationRecord
+from app.translation.records import SUCCESS_STATUSES, failed_items, pending_items
 
 router = APIRouter(prefix="/raw-items", tags=["raw-items"])
 
 # Matches pipeline.py's silence threshold - a source with no successful
 # collection in this window counts as "returned nothing this run."
 SILENCE_THRESHOLD = timedelta(hours=6)
+
+
+class TranslationOut(BaseModel):
+    status: str  # ok | ok_truncated | failed
+    engine: str
+    src_code: str
 
 
 class RawItemOut(BaseModel):
@@ -36,6 +43,7 @@ class RawItemOut(BaseModel):
     original_lang: str
     original_text: str
     working_text: str | None
+    translation: TranslationOut | None
     url: str
 
     model_config = {"from_attributes": True}
@@ -45,10 +53,27 @@ class RawItemsPage(BaseModel):
     items: list[RawItemOut]
     total: int
     awaiting_translation: int
+    translation_failed: int
     silent_sources: list[str]
 
 
-def _to_out(raw_item: RawItem, source: Source) -> RawItemOut:
+def _translations_for(db: Session, raw_item_ids: list[int]) -> dict[int, TranslationRecord]:
+    """The record that explains each item's current state: its successful
+    record if it has one, otherwise its most recent failed attempt."""
+    chosen: dict[int, TranslationRecord] = {}
+    records = (
+        db.query(TranslationRecord)
+        .filter(TranslationRecord.raw_item_id.in_(raw_item_ids))
+        .order_by(TranslationRecord.created_at, TranslationRecord.id)
+    )
+    for record in records:
+        current = chosen.get(record.raw_item_id)
+        if current is None or current.status not in SUCCESS_STATUSES or record.status in SUCCESS_STATUSES:
+            chosen[record.raw_item_id] = record
+    return chosen
+
+
+def _to_out(raw_item: RawItem, source: Source, translation: TranslationRecord | None = None) -> RawItemOut:
     return RawItemOut(
         id=raw_item.id,
         source_id=source.id,
@@ -63,6 +88,11 @@ def _to_out(raw_item: RawItem, source: Source) -> RawItemOut:
         original_lang=raw_item.original_lang,
         original_text=raw_item.original_text,
         working_text=raw_item.working_text,
+        translation=(
+            TranslationOut(status=translation.status, engine=translation.engine, src_code=translation.src_code)
+            if translation is not None
+            else None
+        ),
         url=raw_item.url,
     )
 
@@ -92,15 +122,12 @@ def list_raw_items(
 
     total = query.count()
     rows = query.order_by(RawItem.fetched_at.desc()).offset(offset).limit(limit).all()
-    items = [_to_out(raw_item, source) for raw_item, source in rows]
+    translations = _translations_for(db, [raw_item.id for raw_item, _ in rows])
+    items = [_to_out(raw_item, source, translations.get(raw_item.id)) for raw_item, source in rows]
 
-    awaiting_translation = (
-        db.query(RawItem)
-        .join(Source, RawItem.source_id == Source.id)
-        .filter(RawItem.working_text.is_(None))
-        .filter(Source.language != "en")
-        .count()
-    )
+    # Same definitions the translation job works from (app.translation.records).
+    awaiting_translation = pending_items(db).order_by(None).count()
+    translation_failed = failed_items(db).count()
 
     cutoff = datetime.now(timezone.utc) - SILENCE_THRESHOLD
     silent_sources = [
@@ -117,5 +144,6 @@ def list_raw_items(
         items=items,
         total=total,
         awaiting_translation=awaiting_translation,
+        translation_failed=translation_failed,
         silent_sources=silent_sources,
     )

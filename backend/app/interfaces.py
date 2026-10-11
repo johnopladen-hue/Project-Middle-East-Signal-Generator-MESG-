@@ -14,9 +14,28 @@ from abc import ABC, abstractmethod
 
 
 class Translator(ABC):
+    # Provenance recorded on every TranslationRecord (U-2). Concrete
+    # translators override these; the defaults keep fakes honest about being
+    # neither a real engine nor a hashed model.
+    engine: str = "unknown"
+    model_sha256: str | None = None
+
     @abstractmethod
     def translate(self, text: str, source_lang: str, target_lang: str = "en") -> str:
         """Translate `text` into `target_lang`, preserving the original elsewhere (TDD §4.2)."""
+
+    def translate_batch(self, texts: list[str], source_lang: str, target_lang: str = "en") -> list[str]:
+        """Same-language batch; real engines override this for throughput."""
+        return [self.translate(text, source_lang, target_lang) for text in texts]
+
+    def count_tokens(self, text: str) -> int:
+        """Length measure used to cap triage input (D-016). Engines with a
+        real tokenizer override this; whitespace words are the fallback."""
+        return len(text.split())
+
+    def language_code(self, source_lang: str) -> str:
+        """The engine's own code for `source_lang`, recorded per translation."""
+        return source_lang
 
 
 class Analyst(ABC):

@@ -158,3 +158,69 @@ def test_telegram_items_come_back_with_designation_and_verification_notes_intact
     assert served["tg_farsna"]["verification_note"] == approved["tg_farsna"]["verification_note"]
     assert served["tg_wafagency"]["verification_note"] == approved["tg_wafagency"]["verification_note"]
     assert served["tg_wafagency"]["url"] == "https://t.me/WAFAgency/101380"
+
+
+def _bbc_persian_post() -> str:
+    """Genuine collected text (BBC Persian 293180), via the real collector."""
+    from pathlib import Path
+
+    from app.ingestion.telegram_collector import parse_channel_page
+
+    html = (Path(__file__).parent / "fixtures" / "telegram_bbcpersian_fa.html").read_text(encoding="utf-8")
+    posts = parse_channel_page(html, "bbcpersian", now=datetime(2026, 10, 11, 16, 0, tzinfo=timezone.utc)).posts
+    return next(post.text for post in posts if post.post_id == 293180)
+
+
+def test_each_item_carries_its_translation_record_or_null():
+    """Contract (U-2): NLLB job -> TranslationRecord -> GET /raw-items `translation`."""
+    from app.models import TranslationRecord
+
+    with SessionLocal() as db:
+        source = _make_source(db, name="BBC Persian (contract)", url="https://t.me/s/bbcpersian-contract", language="fa",
+                              kind="telegram")
+        translated = RawItem(source_id=source.id, original_lang="fa", original_text=_bbc_persian_post(),
+                             url="https://t.me/bbcpersian/293180", content_hash="tr-1",
+                             working_text="Trump: Russia and Ukraine agreed to a ceasefire on energy infrastructure")
+        untranslated = RawItem(source_id=source.id, original_lang="fa", original_text=_bbc_persian_post(),
+                               url="https://t.me/bbcpersian/293180?copy", content_hash="tr-2")
+        db.add_all([translated, untranslated])
+        db.commit()
+        db.add(TranslationRecord(raw_item_id=translated.id, engine="nllb-200-distilled-600M-ct2-int8",
+                                 model_sha256="0" * 64, src_code="pes_Arab", status="ok_truncated"))
+        db.commit()
+        source_id, translated_id = source.id, translated.id
+
+    body = TestClient(app).get("/raw-items", params={"source_id": source_id}).json()
+    by_id = {item["id"]: item["translation"] for item in body["items"]}
+    assert by_id.pop(translated_id) == {"status": "ok_truncated", "engine": "nllb-200-distilled-600M-ct2-int8",
+                                        "src_code": "pes_Arab"}
+    assert list(by_id.values()) == [None]
+
+
+def test_an_item_out_of_attempts_moves_from_awaiting_to_translation_failed():
+    from app.models import TranslationRecord
+    from app.translation.records import MAX_ATTEMPTS
+
+    client = TestClient(app)
+    before = client.get("/raw-items").json()
+
+    with SessionLocal() as db:
+        source = _make_source(db, name="BBC Persian (failing)", url="https://t.me/s/bbcpersian-failing", language="fa",
+                              kind="telegram")
+        item = RawItem(source_id=source.id, original_lang="fa", original_text=_bbc_persian_post(),
+                       url="https://t.me/bbcpersian/293180?failing", content_hash="tr-fail")
+        db.add(item)
+        db.commit()
+        db.add_all([
+            TranslationRecord(raw_item_id=item.id, engine="nllb-200-distilled-600M-ct2-int8", src_code="pes_Arab",
+                              status="failed", error="RuntimeError: simulated")
+            for _ in range(MAX_ATTEMPTS)
+        ])
+        db.commit()
+        source_id = source.id
+
+    after = client.get("/raw-items").json()
+    served = client.get("/raw-items", params={"source_id": source_id}).json()["items"][0]
+    assert (after["translation_failed"] - before["translation_failed"],
+            after["awaiting_translation"] - before["awaiting_translation"],
+            served["translation"]["status"]) == (1, 0, "failed")
