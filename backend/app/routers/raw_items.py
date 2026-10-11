@@ -10,6 +10,7 @@ from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -121,7 +122,12 @@ def list_raw_items(
         query = query.filter(RawItem.fetched_at >= since)
 
     total = query.count()
-    rows = query.order_by(RawItem.fetched_at.desc()).offset(offset).limit(limit).all()
+    # Newest by the item's own publication time, not by when MESG fetched it:
+    # a collection run fetches sources one after another, so fetch-time order
+    # put whichever source ran last (WAFA, alphabetically) across the whole
+    # first page (findings.md, 2026-10-11).
+    item_time = func.coalesce(RawItem.published_at, RawItem.fetched_at)
+    rows = query.order_by(item_time.desc(), RawItem.id.desc()).offset(offset).limit(limit).all()
     translations = _translations_for(db, [raw_item.id for raw_item, _ in rows])
     items = [_to_out(raw_item, source, translations.get(raw_item.id)) for raw_item, source in rows]
 

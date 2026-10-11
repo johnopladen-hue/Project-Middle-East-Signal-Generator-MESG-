@@ -224,3 +224,25 @@ def test_an_item_out_of_attempts_moves_from_awaiting_to_translation_failed():
     assert (after["translation_failed"] - before["translation_failed"],
             after["awaiting_translation"] - before["awaiting_translation"],
             served["translation"]["status"]) == (1, 0, "failed")
+
+
+def test_items_are_ordered_by_publication_time_not_by_fetch_order():
+    """A collection run fetches sources one after another, so the last
+    source fetched must not crowd the first page: an item published earlier
+    but fetched later sorts after an item published later."""
+    now = datetime.now(timezone.utc)
+    with SessionLocal() as db:
+        source_a = _make_source(db, name="Fetched first", url="https://example.test/first", kind="telegram")
+        source_b = _make_source(db, name="Fetched last", url="https://example.test/last", kind="telegram")
+        db.add_all([
+            RawItem(source_id=source_a.id, original_lang="ar", original_text="Published later", url="https://example.test/o1",
+                    content_hash="order-1", published_at=now - timedelta(minutes=5), fetched_at=now - timedelta(minutes=2)),
+            RawItem(source_id=source_b.id, original_lang="ar", original_text="Published earlier", url="https://example.test/o2",
+                    content_hash="order-2", published_at=now - timedelta(hours=3), fetched_at=now - timedelta(minutes=1)),
+        ])
+        db.commit()
+        ids = {source_a.id, source_b.id}
+
+    items = TestClient(app).get("/raw-items", params={"limit": 200}).json()["items"]
+    texts = [item["original_text"] for item in items if item["source_id"] in ids]
+    assert texts == ["Published later", "Published earlier"]
