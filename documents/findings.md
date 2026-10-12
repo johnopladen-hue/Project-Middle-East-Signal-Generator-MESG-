@@ -184,6 +184,47 @@ For each entry:
   - Re-check Press TV's timeout and Maariv's recovery on the next run before changing either `verification_note`.
 
 - **Date:** 2026-10-11
+- **Context:** U-2 model acquisition, after the Owner's "go" (O-b). Done in a throwaway venv outside the repo (`C:\MESG-tools\nllb-convert\`, Python 3.12) with torch 2.14.1+cpu, transformers 5.19.0, sentencepiece 0.2.2 and ctranslate2 4.8.2. Command: `ct2-transformers-converter --model facebook/nllb-200-distilled-600M --output_dir backend/models/nllb-200-distilled-600M-ct2-int8 --quantization int8`.
+- **Finding:**
+  - **Hugging Face revision:** `f8d333a098d19b4fd9a8b18f94170487ad3f821d` (`refs/main` of the official `facebook/` repo). The weights converted were its `pytorch_model.bin` (2.46 GB), and `sentencepiece.bpe.model` was copied from the same snapshot.
+  - The cache also holds a `model.safetensors` from `refs/pr/45` (a hub-bot conversion PR, revision `a3e77be…`). transformers' background auto-conversion fetched it on its own, and its file landed at 14:36:04, after the converted `model.bin` was written at 14:35:22. So it was **not** the source of the conversion.
+  - **Output:** `model.bin` sha256 `398726640cc2a02cc6a35277fa3cf2159ce8a1a66b48aa1b6c8837a47e3dd00c` (622,596,105 bytes); `sentencepiece.bpe.model` sha256 `14bb8dfb35c0ffdea7bc01e56cea38b9e3d5efcdcb9c251d6b40538e1aab555a`. The output dir is 633,625,775 bytes (605 MB).
+  - **Wall-clock:** 192 s for download plus conversion. `backend/models/` is ignored via `.gitignore:227`.
+- **Implication:** The weights are a verifiable conversion of the official model, not a third-party pre-converted copy (D-016 translation & analysis providers; CC-BY-NC 4.0, never committed). Every `TranslationRecord` carries the model's sha256, so any future re-conversion is distinguishable in the data.
+
+- **Date:** 2026-10-11
+- **Context:** U-2 real run: `python -m app.translation.run --once` over the whole backlog (U-1's Telegram backfill plus all RSS), 2026-10-11T18:39:49Z to 19:32:29Z, on the Owner's CPU (Intel i7-1355U, 16 GB RAM, int8, beam 2).
+- **Finding:**
+  - **2,495 items, 3,158.2 s, 0.79 items/s.** By language and status: ar ok 910 / ok_truncated 1; fa ok 938 / ok_truncated 11; he ok 633 / ok_truncated 2. **Failed: 0.**
+  - **Reconciliation on the real dev DB:** 0 items with `working_text` but no successful record, and 0 successful records without `working_text`. Every record carries the single model sha256 above.
+  - **Throughput check (D-021):** ~3,000 items/day ÷ 0.79 items/s ≈ **63 CPU-minutes a day**. That fits easily while the PC is on, so no throttling is needed or applied.
+- **Implication:** The free triage path keeps up with v1 volume on this machine. The scheduler (U-3) can run translation every 5 minutes without falling behind.
+
+- **Date:** 2026-10-11
+- **Context:** U-2 spot-check of 10 translated items: 3 ar, 3 fa and 3 he, each from a different source chosen at random (seeded), plus 1 Levantine-dialect Telegram post. This is **early evidence on A-008** (NLLB triage good enough), **not the O-3 bake-off**, and A-008's status is unchanged.
+- **Finding:** The gist is usable for triage in 10 of 10 items, but **names and places are unreliable**:
+
+  | Lang | Item | Result | Usable for triage? |
+  |---|---|---|---|
+  | ar | Quds News 1252 | The lede is right. The headline is a dialect quote ("أحسن إشي نحفظ القرآن ونصلّي", "the best thing is to memorize the Quran and pray"), rendered "It is best to keep the Quran and prayers", and الأسيرة came out as "captive". | Yes |
+  | ar | LBCI 449 | "تحالف خماسي" (five-party alliance) came out as "Five-year alliance"; the rest is right. | Mostly; a key detail is wrong |
+  | ar | WAFA 2920 | **"دير البلح" (Deir al-Balah) came out as "Al-Mahlah monastery".** The event (a Gaza airstrike) is right, the location wrong. | Yes for the event; no for location |
+  | fa | Akhbar-e Fori 1435 | **"محسن رضایی" (Mohsen Rezaei) came out as "Mahsan Satyafi"**; the content is right. The 🇮🇷 emoji renders as `⁇`. | Yes; the speaker is lost |
+  | fa | Iran International 932 (football) | Headline garbled ("Combs artillery with Calafuri flowers and a gamer"), and the lede says "2-0" when it was 2-1. | Yes, to discard as sport |
+  | fa | HRANA 145 | **"ممسنی" (Mamasani) came out as "Memphis"**; "فعالان صنفی" became "class activists". The stored original itself ends with the feed's own "You must be logged into the site to view this content." | Yes; the place is wrong |
+  | he | Pikud HaOref 2524 | **The village "ערב אל עראמשה" (Arab al-Aramshe) came out as "Good evening to you."** The alert type is right. | No for location, on an alert |
+  | he | Globes 851 | Accurate; "מזמיני הבנייה" (construction clients) became "construction projects". | Yes |
+  | he | Ynet 1348 | Accurate, but the last clause ("…until they reach all of us and take us out of the cycle of bloodshed") was **dropped silently**. | Yes |
+  | ar (Levantine) | Palinfo Telegram 2810 | A quote in genuine dialect: "كيف أسكت؟ ليش ما تروح إنت من هون، وروح إنت على بيتك؟" ("How can I keep quiet? Why don't *you* leave here and go to your home?"). NLLB **dropped the first sentence** and rendered "روح" (go) as "your spirit". The caption is right. | The gist only |
+
+  Dialect is rare in this data: only **2 of 655** Arabic Telegram posts carry clear Levantine dialect markers. The news channels write MSA, and dialect shows up mainly inside quotes.
+- **Implication:**
+  - Fit for its D-016 purpose (deciding what to read) and not beyond it. **Never use NLLB output for geolocation, entity or actor matching, or alerting.** Place names (Deir al-Balah, Mamasani, Arab al-Aramshe) and person names (Mohsen Rezaei) were the most frequent errors, in 4 of 10 items.
+  - Silent omissions (Ynet, Palinfo) mean "translated" is not the same as "complete". The UI's "not verified" label is earned.
+  - Inputs for O-3: (1) test `apc_Arab`/`ajp_Arab` on quoted dialect; (2) a name and place error rate is the metric that matters most; (3) emoji and other unknown symbols decode to `⁇`, which is cosmetic but worth stripping.
+  - Ten items prove nothing statistically. A-008 stays open.
+
+- **Date:** 2026-10-11
 - **Context:** The Owner, reading `/incoming`: "I'm only seeing news items from WAFA … I'm trying to get a much more diverse cross section of reporting."
 - **Finding:** A sort problem, not a collection problem. The dev DB held items from **43 sources**, but `GET /raw-items` sorted by `fetched_at`. A collection run fetches sources one after another, Telegram alphabetically, so the last channel fetched (WAFA, 87 posts) had the newest fetch times and filled the entire first page: **50 of 50 items**. Sorted by the item's own time (`coalesce(published_at, fetched_at)`), the same first 50 came from **18 sources** spanning Israeli, Iranian (state and opposition), Lebanese, Syrian, Palestinian, Jordanian and English-comparison outlets.
 - **Implication:** `/raw-items` now orders by publication time, falling back to fetch time, then id (test added and mutation-checked; reverting to `fetched_at` fails it). Fetch time says when MESG ran, not when anything happened, so it should never be the order a reader sees. Volume skew remains: Fars/IRNA/Akhbar-e Fori/Al Mayadeen/HaMoked post many times more than Amit Segal or Vahid Online, so a busy hour can still lean toward the prolific channels. If that bothers the Owner in daily use, the remedies are U-4's source/kind/language filters, or a later per-source balancing option. That is a Planner decision; nothing was silently capped.
