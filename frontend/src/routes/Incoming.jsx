@@ -17,6 +17,9 @@ const LANGUAGE_OPTIONS = [
   { value: "en", label: "English" },
 ];
 
+// D-016: NLLB output is triage, not a verified translation - say so on every line.
+const TRIAGE_LABEL = "Machine triage translation (NLLB-200), not verified";
+
 const CLASS_OPTIONS = [
   { value: "", label: "All classes" },
   { value: "native", label: "Native" },
@@ -47,17 +50,26 @@ function ItemCard({ item }) {
         ) : null}
       </div>
 
-      <p dir={isRtl ? "rtl" : "ltr"} lang={item.original_lang} className="text-sm text-ink">
+      {item.working_text ? (
+        <div className="mb-2 border-b border-rule pb-2">
+          <p className="text-xs text-ink-muted">
+            {TRIAGE_LABEL}
+            {item.translation?.status === "ok_truncated" ? " — first part only" : ""}
+          </p>
+          <p dir="ltr" lang="en" className="whitespace-pre-line text-sm text-ink">
+            {item.working_text}
+          </p>
+        </div>
+      ) : null}
+
+      <p dir={isRtl ? "rtl" : "ltr"} lang={item.original_lang} className="whitespace-pre-line text-sm text-ink">
         {item.original_text}
       </p>
 
-      {item.working_text ? (
-        <div className="mt-2 border-t border-rule pt-2">
-          <p className="text-xs text-ink-muted">Machine translation</p>
-          <p className="text-sm text-ink-muted">{item.working_text}</p>
-        </div>
-      ) : item.original_lang !== "en" ? (
-        <p className="mt-2 text-xs text-ink-muted">Awaiting translation</p>
+      {!item.working_text && item.original_lang !== "en" ? (
+        <p className="mt-2 text-xs text-ink-muted">
+          {item.translation?.status === "failed" ? "Translation failed — original shown" : "Awaiting translation"}
+        </p>
       ) : null}
 
       <a
@@ -83,6 +95,11 @@ ItemCard.propTypes = {
     original_lang: PropTypes.string.isRequired,
     original_text: PropTypes.string.isRequired,
     working_text: PropTypes.string,
+    translation: PropTypes.shape({
+      status: PropTypes.oneOf(["ok", "ok_truncated", "failed"]).isRequired,
+      engine: PropTypes.string.isRequired,
+      src_code: PropTypes.string.isRequired,
+    }),
     url: PropTypes.string.isRequired,
   }).isRequired,
 };
@@ -139,7 +156,9 @@ export function Incoming() {
               <AlertTriangle size={14} aria-hidden="true" className="mt-0.5 shrink-0 text-grade-2" />
             ) : null}
             Showing {query.data.items.length} of {query.data.total} items. {query.data.awaiting_translation} awaiting
-            translation. {query.data.silent_sources.length} source
+            translation
+            {query.data.translation_failed ? `, ${query.data.translation_failed} translation failed` : ""}.{" "}
+            {query.data.silent_sources.length} source
             {query.data.silent_sources.length === 1 ? "" : "s"} returned nothing this run
             {query.data.silent_sources.length > 0 ? `: ${query.data.silent_sources.join(", ")}` : "."}
           </p>

@@ -145,6 +145,29 @@ class CollectorCursor(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
 
 
+class TranslationStatus(str, enum.Enum):
+    OK = "ok"
+    OK_TRUNCATED = "ok_truncated"  # only the first part was translated (Keel P11: a category, not silence)
+    FAILED = "failed"
+
+
+class TranslationRecord(Base):
+    """One row per triage-translation attempt on a RawItem (D-016, U-2).
+    A new table, so `create_all` adds it with no reset (Standing Order 7).
+    `RawItem.working_text` holds the text; this holds how it was made."""
+
+    __tablename__ = "translation_records"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    raw_item_id: Mapped[int] = mapped_column(ForeignKey("raw_items.id"), index=True)
+    engine: Mapped[str] = mapped_column(String(64))
+    model_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    src_code: Mapped[str] = mapped_column(String(16))
+    status: Mapped[str] = mapped_column(String(16))
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
 class Story(Base):
     __tablename__ = "stories"
 

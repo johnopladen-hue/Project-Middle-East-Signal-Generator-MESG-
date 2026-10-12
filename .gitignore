@@ -222,3 +222,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# NLLB-200 model weights (D-016) - CC-BY-NC 4.0, converted locally, never committed
+backend/models/
