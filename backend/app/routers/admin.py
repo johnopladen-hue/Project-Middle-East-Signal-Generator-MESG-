@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.deps import require_admin
 from app.models import Recipient, Settings, Source
+from app.scheduler import set_paused
 
 router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)])
 
@@ -181,6 +182,24 @@ def _get_or_create_settings(db: Session) -> Settings:
 @router.get("/settings", response_model=SettingsOut)
 def get_settings(db: Session = Depends(get_db)):
     return SettingsOut(values=_get_or_create_settings(db).values)
+
+
+class PauseOut(BaseModel):
+    paused: bool
+
+
+@router.post("/pipeline/pause", response_model=PauseOut)
+def pause_pipeline(db: Session = Depends(get_db)):
+    """U-3: every scheduled job checks this flag at start and records
+    `skipped_paused` instead of collecting. A run already in progress finishes."""
+    set_paused(db, True)
+    return PauseOut(paused=True)
+
+
+@router.post("/pipeline/resume", response_model=PauseOut)
+def resume_pipeline(db: Session = Depends(get_db)):
+    set_paused(db, False)
+    return PauseOut(paused=False)
 
 
 @router.patch("/settings", response_model=SettingsOut)

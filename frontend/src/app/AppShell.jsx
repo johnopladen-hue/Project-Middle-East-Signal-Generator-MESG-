@@ -85,6 +85,10 @@ export function AppShell() {
               silentSourceCount={pipelineStatus?.silent_source_count ?? 0}
               llmMonthlySpendUsd={pipelineStatus?.llm_monthly_spend_usd ?? 0}
               llmMonthlyCapUsd={pipelineStatus?.llm_monthly_cap_usd ?? 20}
+              schedulerRunning={pipelineStatus?.scheduler_running ?? null}
+              paused={pipelineStatus?.paused ?? false}
+              jobs={pipelineStatus?.jobs ?? []}
+              collectionGaps={pipelineStatus?.collection_gaps ?? []}
             />
           </div>
           <div className="flex shrink-0 items-center gap-3">

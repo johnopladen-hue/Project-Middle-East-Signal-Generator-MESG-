@@ -1,0 +1,41 @@
+{
+  "last_run_at": "2026-11-01T11:50:00+00:00",
+  "silent_source_count": 1,
+  "llm_daily_spend_usd": 0.0,
+  "llm_monthly_spend_usd": 0.0,
+  "llm_daily_cap_usd": 0.6666666666666666,
+  "llm_monthly_cap_usd": 20.0,
+  "jobs": [
+    {
+      "job": "rss",
+      "interval_minutes": 30,
+      "last_run_at": "2026-11-01T11:50:00+00:00",
+      "last_status": "partial",
+      "last_success_at": "2026-11-01T11:50:00+00:00"
+    },
+    {
+      "job": "telegram",
+      "interval_minutes": 15,
+      "last_run_at": "2026-11-01T10:00:00+00:00",
+      "last_status": "ok",
+      "last_success_at": "2026-11-01T10:00:00+00:00"
+    },
+    {
+      "job": "translate",
+      "interval_minutes": 5,
+      "last_run_at": "2026-11-01T11:57:00+00:00",
+      "last_status": "failed",
+      "last_success_at": null
+    }
+  ],
+  "collection_gaps": [
+    {
+      "job": "telegram",
+      "start": "2026-11-01T10:00:00+00:00",
+      "end": null,
+      "ongoing": true
+    }
+  ],
+  "paused": false,
+  "scheduler_running": false
+}
