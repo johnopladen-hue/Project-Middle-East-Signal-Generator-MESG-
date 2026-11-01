@@ -7,7 +7,7 @@ import { Dashboard } from "../routes/Dashboard";
 import { Incoming } from "../routes/Incoming";
 import { capabilities } from "../test/fixtures";
 import { server } from "../test/mocks/server";
-import { HonestyBanner } from "./HonestyBanner";
+import { HonestyBanner, SCOPE_LINE } from "./HonestyBanner";
 
 // `capabilities` is captured from the real GET /capabilities over the dev seed
 // (scripts/capture_frontend_fixtures.py): nothing collected, synthetic briefs present.
@@ -35,7 +35,8 @@ describe("HonestyBanner (U-5)", () => {
   it("states today's real position in the order's words", async () => {
     renderWith(<HonestyBanner />, TODAY);
     expect(await screen.findByText(
-      "Live feed: RSS + Telegram, machine triage translation. Not yet running: graded analysis, daily brief, alerts by email/SMS.",
+      "Live feed: RSS + Telegram, machine triage translation. Not yet running: graded analysis, daily brief, alerts by email/SMS. " +
+        SCOPE_LINE,
     )).toBeInTheDocument();
   });
 
@@ -43,7 +44,8 @@ describe("HonestyBanner (U-5)", () => {
     renderWith(<HonestyBanner />);
     expect(await screen.findByText(
       "Not collecting yet. Not yet running: RSS, Telegram, machine triage translation, graded analysis, daily brief, " +
-        "alerts by email/SMS. Briefs and grades on the Dashboard are synthetic dev-seed data, not analysis.",
+        "alerts by email/SMS. Briefs and grades on the Dashboard are synthetic dev-seed data, not analysis. " +
+        SCOPE_LINE,
     )).toBeInTheDocument();
   });
 
@@ -52,6 +54,14 @@ describe("HonestyBanner (U-5)", () => {
     const text = (await banner()).textContent;
     expect(text).toContain("Live feed: RSS + Telegram, machine triage translation, graded analysis.");
     expect(text).toContain("Not yet running: daily brief, alerts by email/SMS.");
+  });
+
+  it("states the D-022 scope in every state, even with everything running", async () => {
+    const all = Object.fromEntries(Object.keys(capabilities).map((k) => [k, k !== "synthetic_data_present"]));
+    renderWith(<HonestyBanner />, all);
+    expect((await banner()).textContent).toContain(
+      "not population opinion or private conversation",
+    );
   });
 
   it("drops the 'not yet running' clause when everything runs", async () => {
@@ -63,7 +73,7 @@ describe("HonestyBanner (U-5)", () => {
   it("is never blank and never dismissable, even when the check fails", async () => {
     server.use(http.get("/api/capabilities", () => new HttpResponse(null, { status: 500 })));
     renderWith(<HonestyBanner />);
-    expect(await screen.findByText("Couldn't check what MESG is running right now.")).toBeInTheDocument();
+    expect(await screen.findByText(`Couldn't check what MESG is running right now. ${SCOPE_LINE}`)).toBeInTheDocument();
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 

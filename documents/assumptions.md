@@ -73,3 +73,16 @@ For each entry:
 - **Assumption:** $20/month of Claude covers the deep pass at v1 volume once triage is free ([D-016](decisions/D-016-translation-analysis-providers.md)).
 - **Falsifying test:** The circuit breaker trips before the daily brief completes on more than 3 days in any 14.
 - **If false:** Narrow the sources, raise the selection bar for the deep pass, or the Owner revisits the budget.
+
+- **ID:** A-011
+- **Date:** 2026-11-01
+- **Assumption:** Reddit's researcher route under its Responsible Builder Policy ([D-022](decisions/D-022-bounded-scope-and-voice-widening.md)) reviews and can grant access to an individual, non-institutional, non-commercial researcher within a timeline that matters to MESG.
+- **Falsifying test:** the request is refused, or there is no substantive reply 60 days after filing (i.e. by early January 2027 if filed in early November 2026).
+- **If false:** Reddit stays out of MESG; D-022 item 3 closes as "not available"; diaspora sentiment is not covered unless a different route is decided.
+
+- **ID:** A-012
+- **Date:** 2026-11-01
+- **Assumption:** Named voices, local/city channels and citizen-reporting channels on public Telegram are a meaningful proxy for in-region public speech in Iran and the Levant, enough that divergence from English media found there is signal, not an artefact of which channels were picked.
+- **Falsifying test:** after the widened set has run for 30 days, divergence findings are dominated by a handful of high-volume channels, or flip when one perspective's channels are excluded (a per-perspective sensitivity check once the Analyst exists).
+- **If false:** the selection itself is the bias. Rebalance the channel set by perspective and volume, and say so in the brief, before trusting divergence conclusions.
+

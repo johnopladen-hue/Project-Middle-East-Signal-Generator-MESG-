@@ -2,6 +2,7 @@
 
 **Date:** 2026-09-27
 **Status:** Decided
+**Amended by:** [D-022](D-022-bounded-scope-and-voice-widening.md) (Reddit route: research application; Telegram groups/comments named as an open option)
 
 ## Decision
 
