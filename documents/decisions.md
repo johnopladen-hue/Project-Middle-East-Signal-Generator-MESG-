@@ -27,6 +27,7 @@
 | [D-019](decisions/D-019-scheduler-runtime.md) | Scheduler & runtime: in-app scheduler, localhost first | 2026-09-27 | Decided (build deferred to next order) | — |
 | [D-020](decisions/D-020-go-remote-tripwire-amendment.md) | Go-remote tripwire amended: a local-only credential does not trip it | 2026-09-27 | Decided | D-011 (tripwire clause only) |
 | [D-021](decisions/D-021-v1-approved-source-set.md) | v1 approved source set (47 sources: RSS + Telegram, designated sources flagged) | 2026-09-27 | Decided | — |
+| [D-022](decisions/D-022-bounded-scope-and-voice-widening.md) | Bounded scope (public in-region voices vs English media); widen Telegram; Reddit by research application | 2026-11-01 | Decided | Extends D-018; narrows the mission statement |
 
 ## Open Decisions / Pending (not yet a D-file)
 

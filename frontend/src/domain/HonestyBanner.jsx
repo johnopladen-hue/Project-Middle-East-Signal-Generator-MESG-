@@ -15,6 +15,10 @@ const OTHERS = [
   ["alert_delivery", "alerts by email/SMS"],
 ];
 
+// D-022: a standing statement of what MESG measures - not state, so not derived.
+export const SCOPE_LINE =
+  "Scope: public in-region channels, outlets and named voices compared with English media, not population opinion or private conversation.";
+
 export function describeCapabilities(caps) {
   const feeds = FEEDS.filter(([key]) => caps[key]).map(([, label]) => label);
   const others = OTHERS.filter(([key]) => caps[key]).map(([, label]) => label);
@@ -32,6 +36,7 @@ export function describeCapabilities(caps) {
   if (caps.synthetic_data_present) {
     sentences.push("Briefs and grades on the Dashboard are synthetic dev-seed data, not analysis.");
   }
+  sentences.push(SCOPE_LINE);
   return sentences.join(" ");
 }
 
@@ -40,7 +45,7 @@ export function HonestyBanner() {
   const text = data
     ? describeCapabilities(data)
     : isError
-      ? "Couldn't check what MESG is running right now."
+      ? `Couldn't check what MESG is running right now. ${SCOPE_LINE}`
       : "Checking what MESG is running…";
 
   return (
