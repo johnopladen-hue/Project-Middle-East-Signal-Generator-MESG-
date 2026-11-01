@@ -416,6 +416,30 @@ class LlmSpend(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
 
 
+class IngestRunStatus(str, enum.Enum):
+    OK = "ok"
+    PARTIAL = "partial"  # some sources failed, at least one did not
+    FAILED = "failed"  # the job raised, every source failed, or the translator was unavailable
+    SKIPPED_PAUSED = "skipped_paused"  # the Owner paused ingestion (Keel P11: a category, not a missing row)
+
+
+class IngestRun(Base):
+    """One row per scheduled job run (D-019 scheduler & runtime, U-3).
+    A new table, so `create_all` adds it with no reset (Standing Order 7).
+    `/pipeline/status` derives last-run times and collection gaps from it."""
+
+    __tablename__ = "ingest_runs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    job: Mapped[str] = mapped_column(String(32), index=True)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    status: Mapped[str] = mapped_column(String(16))
+    items_new: Mapped[int] = mapped_column(Integer, default=0)
+    sources_failed: Mapped[int] = mapped_column(Integer, default=0)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
 class Settings(Base):
     """Thresholds/cadence (TDD §5, §7 admin/settings). Not in the TDD §6
     entity table — added as a singleton row since Admin needs somewhere

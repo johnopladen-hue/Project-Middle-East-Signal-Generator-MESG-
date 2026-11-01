@@ -12,9 +12,10 @@
 import geoItemsCentcom from "./geo_items_centcom.json";
 import organizationDetails from "./organization_details.json";
 import organizations from "./organizations.json";
+import pipelineStatus from "./pipeline_status.json";
 import regions from "./regions.json";
 
-export { geoItemsCentcom, organizationDetails, organizations, regions };
+export { geoItemsCentcom, organizationDetails, organizations, pipelineStatus, regions };
 
 export function orgSummaryByName(name) {
   const org = organizations.find((o) => o.name === name);

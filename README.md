@@ -21,6 +21,16 @@ Run both backend and frontend with one command (see `scripts/dev.py`):
 backend\.venv\Scripts\python scripts\dev.py
 ```
 
+That is the **development** run: the backend reloads on every code edit and **does not collect**.
+
+For **daily use**, with MESG collecting on its own while the PC is on ([D-019](documents/decisions/D-019-scheduler-runtime.md), U-3), use `scripts/run.py` instead:
+
+```
+backend\.venv\Scripts\python scripts\run.py
+```
+
+It starts the same two processes, but the backend runs without `--reload` and with `MESG_SCHEDULER=1`: RSS every 30 min, Telegram every 15 min and NLLB triage translation every 5 min (the translate job needs the model from U-2; without it each run is recorded as `failed` with the reason). Anything missed while the PC was off runs at once on start, and the gap shows in the header's status strip. Only one scheduler runs per checkout (`backend/data/scheduler.lock`): a second backend refuses to start one and says so in its log. An admin can pause and resume collection with `POST /api/admin/pipeline/pause` and `POST /api/admin/pipeline/resume`.
+
 - Backend: http://127.0.0.1:8000/health
 - Frontend: http://127.0.0.1:5173/ (log in as `analyst` / `correct-password` — a dev-only seeded account, see `backend/app/database.py`)
 

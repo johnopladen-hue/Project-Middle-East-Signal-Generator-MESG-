@@ -93,8 +93,45 @@ def main() -> None:
     _write("regions.json", client.get("/regions").json())
     _write("geo_items_centcom.json", client.get("/geo/items", params={"aor": "CENTCOM"}).json())
 
+    _write("pipeline_status.json", _capture_pipeline_status(client))
+
     os.close(_fd)
     os.unlink(_db_path)
+
+
+def _capture_pipeline_status(client) -> dict:
+    """U-3: a real /pipeline/status over a real IngestRun history - scheduler
+    state (when jobs ran), not collected content. The shapes the strip must
+    handle: Telegram's last success 2h ago (an open collection gap), RSS
+    partial (the HTTP 403 MESG actually records for Al Arabiya), translate
+    failed (no model), and no scheduler in this process. Times are relative to
+    the capture, then normalised so a re-capture produces a stable diff."""
+    from datetime import datetime, timedelta, timezone
+
+    from app.models import IngestRun
+
+    now = datetime.now(timezone.utc)
+    rows = [
+        ("telegram", now - timedelta(hours=2), "ok", 41, 0, None),
+        ("rss", now - timedelta(minutes=10), "partial", 12, 1, "Al Arabiya: HTTP 403"),
+        ("translate", now - timedelta(minutes=3), "failed", 0, 0, "NllbModelMissing: NLLB model not found"),
+    ]
+    with SessionLocal() as session:
+        for job, at, status, new, failed, notes in rows:
+            session.add(IngestRun(job=job, started_at=at, finished_at=at, status=status, items_new=new,
+                                  sources_failed=failed, notes=notes))
+        session.commit()
+    body = client.get("/pipeline/status").json()
+    stamps = {"telegram": "2026-11-01T10:00:00+00:00", "rss": "2026-11-01T11:50:00+00:00",
+              "translate": "2026-11-01T11:57:00+00:00"}
+    for job in body["jobs"]:
+        for key in ("last_run_at", "last_success_at"):
+            if job[key]:
+                job[key] = stamps[job["job"]]
+    for gap in body["collection_gaps"]:
+        gap["start"] = stamps[gap["job"]]
+    body["last_run_at"] = stamps["rss"]
+    return body
 
 
 if __name__ == "__main__":

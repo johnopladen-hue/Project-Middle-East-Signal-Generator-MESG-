@@ -29,6 +29,7 @@ from app.routers.recipients import router as recipients_router
 from app.routers.regions import router as regions_router
 from app.routers.signals import router as signals_router
 from app.routers.stories import router as stories_router
+from app.scheduler import start_scheduler, stop_scheduler
 
 
 @asynccontextmanager
@@ -37,7 +38,13 @@ async def lifespan(_: FastAPI):
     seed_dev_user()
     with SessionLocal() as session:
         seed_aor_memberships(session)
-    yield
+    # U-3 (D-019): starts only with MESG_SCHEDULER=1 and the single-instance
+    # lock - see app.scheduler.start_scheduler for what each guard covers.
+    start_scheduler(SessionLocal)
+    try:
+        yield
+    finally:
+        stop_scheduler()
 
 
 app = FastAPI(title="MESG API", version="0.1.0", lifespan=lifespan)
