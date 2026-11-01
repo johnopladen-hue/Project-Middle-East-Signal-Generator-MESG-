@@ -25,7 +25,7 @@ The Owner ruled on the Planner/Code options: Telegram widening (1), Reddit resea
 
 ## Options rejected
 
-- **Keyless Reddit collection now** (public `.rss`/`.json`). Not attempted further. Reddit closed self-service API access on 2025-11-11, and building on unauthenticated endpoints while an access request is pending invites a block that could prejudice the request. D-018's no-evasion line applies either way.
+- **Keyless Reddit collection now** (public `.rss`/`.json`). The Owner-PC probe was throttled with HTTP 429 after 1 of 15 feeds, and the one feed that answered is diaspora English. Reddit also closed self-service API access on 2025-11-11, and building on unauthenticated endpoints while an access request is pending invites a block that could prejudice the request. D-018's no-evasion line applies either way.
 - **X pay-per-use on curated accounts** (~$0.005 per post read, ~$150/month at 1,000 posts/day). The Owner declined for now. The cost is well past D-016's $20/month posture.
 - **Keep the original "what people are saying" wording.** That would claim a capability MESG cannot deliver within D-018, which is a Keel P8 failure (a claim without the artefact behind it).
 - **Abandon the people-side entirely.** Rejected. Named voices, local channels and citizen reporting are real, reachable in-region speech.
@@ -34,7 +34,8 @@ The Owner ruled on the Planner/Code options: Telegram widening (1), Reddit resea
 ## Evidence
 
 - Reddit admins, r/redditdev, 2025-11-11, "Introducing the Responsible Builder Policy": self-service access to Reddit's public data API is closed; new access, including new OAuth tokens, requires a request; researchers file a ticket.
-- 2026-11-01 probes from Code's cloud workspace: `https://www.reddit.com/r/iran/new/.rss` and three similar URLs got no route (proxy 403, 0 bytes), and the web-fetch tool refused reddit.com as not allowlisted. **This says nothing about reachability from the Owner's PC.** A probe script (`probe_reddit.py`, keyless `.rss`, 15 candidate subreddits) was given to the Owner and had not been run when this decision was made.
+- **Keyless probe from the Owner's PC, 2026-11-01** (`findings.md`, same date; PR #39): `probe_reddit.py` requested 15 subreddits' `/new/.rss` with D-018's posture (`MESGBot/0.1`, 3 s spacing, no retry). **1 of 15 returned entries.** r/iran gave 100 entries (2026-10-04 → 2026-11-01), only 5 with Arabic script and 0 Hebrew; the sub writes in English. **All 14 later requests got HTTP 429.** Keyless RSS cannot sustain even a 15-feed sweep at MESG's pace, and the one sub that answered is diaspora English. Both facts support routing Reddit through the research application, not a collector.
+- Code's cloud workspace has no route to reddit.com (proxy 403, 0 bytes) and its web-fetch tool refuses the host. This is recorded only so that no one mistakes it for evidence about Reddit itself.
 - X pricing evidence: `findings.md`, 2026-10-11 (X/Twitter deferral).
 - Collection composition: `backend/app/sources/approved_sources_v1.yaml` (17 Telegram channels) and `findings.md`, 2026-10-11 (U-1 real run).
 
