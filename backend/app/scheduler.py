@@ -49,6 +49,7 @@ JOB_INTERVALS: dict[str, timedelta] = {
     "rss": timedelta(minutes=30),
     "telegram": timedelta(minutes=15),
     "translate": timedelta(minutes=5),
+    "locate": timedelta(minutes=5),  # D-023: place names in the original text -> ItemLocation
 }
 
 # A run that ended in one of these counts as "the job ran". `partial` counts
@@ -156,12 +157,21 @@ def run_translate_job(db: Session, ctx: "SchedulerContext") -> JobOutcome:
     return JobOutcome(items_new=ok, notes=notes, failed=bool(failed and not ok))
 
 
+def run_locate_job(db: Session, _ctx: "SchedulerContext") -> JobOutcome:
+    from app.geo.locate import locate_pending
+
+    result = locate_pending(db)
+    notes = f"checked={result.checked} located={result.located} none={result.not_located}"
+    return JobOutcome(items_new=result.located, notes=notes)
+
+
 JobRunner = Callable[[Session, "SchedulerContext"], JobOutcome]
 
 DEFAULT_RUNNERS: dict[str, JobRunner] = {
     "rss": run_rss_job,
     "telegram": run_telegram_job,
     "translate": run_translate_job,
+    "locate": run_locate_job,
 }
 
 

@@ -98,6 +98,12 @@ def main() -> None:
     _write("capabilities.json", client.get("/capabilities").json())
     _write("pipeline_status.json", _capture_pipeline_status(client))
 
+    # D-023: real news items on the map, and the item page a dot opens.
+    news, detail_located, detail_unlocated = _capture_geo_news(client)
+    _write("geo_items_news.json", news)
+    _write("raw_item_detail_located.json", detail_located)
+    _write("raw_item_detail_unlocated.json", detail_unlocated)
+
     os.close(_fd)
     os.unlink(_db_path)
 
@@ -136,6 +142,55 @@ def _capture_pipeline_status(client) -> dict:
     body["last_run_at"] = stamps["rss"]
     return body
 
+
+# The genuine captured t.me pages in backend/tests/fixtures/ (U-1), served to
+# the real Telegram collector exactly as the backend tests do, then located by
+# the real gazetteer. The geo window is pinned to the pages' own capture time.
+TELEGRAM_FIXTURE_NOW = "2026-10-11T16:00:00+00:00"
+TELEGRAM_FIXTURE_PAGES = {
+    "abualiexpress": "telegram_abualiexpress_reply.html",
+    "ajmubasher": "telegram_ajmubasher_ar.html",
+    "amitsegal": "telegram_amitsegal_forward_media.html",
+    "bbcpersian": "telegram_bbcpersian_fa.html",
+    "wafagency": "telegram_wafagency_ar.html",
+}
+
+
+def _capture_geo_news(client):
+    from datetime import datetime
+
+    from app.geo.locate import locate_pending
+    from app.ingestion.telegram_collector import FIRST_PAGE_BEFORE, collect_source, handle_from_url
+    from app.models import ItemLocation, RawItem, Source
+    from app.sources.seed_approved import seed_approved
+
+    now = datetime.fromisoformat(TELEGRAM_FIXTURE_NOW)
+    no_posts = (FIXTURES / "telegram_no_posts_found.html").read_text(encoding="utf-8")
+    with SessionLocal() as session:
+        seed_approved(session)
+        for source in session.query(Source).filter(Source.kind == "telegram").all():
+            page_file = TELEGRAM_FIXTURE_PAGES.get(handle_from_url(source.url).casefold())
+            if not page_file:
+                continue
+            first = (FIXTURES / page_file).read_text(encoding="utf-8")
+            collect_source(
+                session, source, fetch=lambda _h, before, first=first: first if before == FIRST_PAGE_BEFORE else no_posts, now=now
+            )
+        locate_pending(session)
+
+        def first_item(status):
+            return (
+                session.query(RawItem.id)
+                .join(ItemLocation, ItemLocation.raw_item_id == RawItem.id)
+                .filter(ItemLocation.status == status)
+                .order_by(RawItem.id)
+                .first()[0]
+            )
+
+        located_id, unlocated_id = first_item("located"), first_item("none")
+
+    news = client.get("/geo/items", params={"aor": "CENTCOM", "until": TELEGRAM_FIXTURE_NOW}).json()
+    return news, client.get(f"/raw-items/{located_id}").json(), client.get(f"/raw-items/{unlocated_id}").json()
 
 if __name__ == "__main__":
     main()

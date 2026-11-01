@@ -296,3 +296,22 @@ For each entry:
   - Reddit's official route is its authenticated Data API, which needs a registered app, i.e. a credential. That is outside D-018's keyless posture, and its terms still need the careful read D-018 asks for. Adopting it would need a new D-number and a check against D-020 (the go-remote tripwire). It is a Planner call; nothing is built.
   - If Reddit is revisited keylessly, the one test still worth running is a much slower sweep (e.g. one sub per 60 s, about 15 min in total) to tell a short burst limit from a standing block. That is slower polling, not evasion. Not run, pending the Owner's call.
   - For MESG's purpose (primary-language voices), the one sub that answered is a weak candidate. Weigh it against the Telegram channels already in D-021 (v1 approved source set) before spending more effort here.
+
+- **Date:** 2026-11-01
+- **Context:** The Owner, looking at the live map: "The map doesn't seem to be populating with the news stories, please ensure that I can click on a dot on the map and go straight to the news story." The map plotted only Stories (from the not-yet-built Analyst, so only the labelled synthetic dev seed) and Organizations. The 5,936 real collected items had no location. The Owner directed: place each item where its text says the event happened, not at the source's origin, and show only the top 10-20 if the map gets cluttered. That direction became D-023 (map item geolocation).
+- **Finding:**
+  - **Matching every GeoNames populated place against real text fails badly.** First pass, all populated places in the 22 AOR countries: "عاجل" (urgent) located 198 items in a Syrian village. Others included "خبر" (news) → Khobar, "سال" (year) → Sāl, "الميادين" (the Al Mayadeen channel's own signature) → Mayadin, "Hamas" → Hāmis, and "Israeli" → Israel.
+  - **What fixed most of it:**
+    - a population floor (1,000 in the core theatre, 15,000 elsewhere; administrative seats always kept, because GeoNames records population 0 even for Nabatieh);
+    - letting a match with an attached prefix stripped count only for major places;
+    - a second prefix only after "and" (Hebrew "שהגיש", "that submitted", had become the village of Jish);
+    - dropping kaf as a prefix (Persian words starting with keheh lost it and matched Egypt);
+    - a stop list built from the evidence, each entry with its ordinary meaning, among them every Arabic and Persian weekday ("دوشنبه", Monday, is spelled like Dushanbe) and outlet names ("Iran International" consumes its words so it is never read as "Iran").
+  - **Lost on purpose:** Tyre ("صور" usually means "photos"), Amman/Oman ("عمان", one spelling), Rehovot ("ברחובות" is also "in the streets") and Dushanbe. These are costs of the stop list, recorded rather than hidden.
+  - **Hand-checked accuracy, by where the event happened:** sample 1 was 24/30. Sample 2, after the first fixes, was 21/30 plus 1 near miss (Gaza for Khan Yunis). **Sample 3, untouched (seed 424242, 40 items): 30/40 (75%), 31 with the near miss.** City level 12/15 (+1 near); country level 17/23. Five of the 9 misses were statements made outside the region about a country (Trump on Iran, the US Treasury, a UAE adviser), placed on the country named. Three were remaining collisions, fixed after the sample ("North" as a Latin alternate of North Lebanon, "معبر" = crossing, the kaf prefix). So 75% is the measured figure, not a post-fix estimate.
+  - **Real run, all items:** 3,429 of 5,936 located (city 1,782, province 163, country 1,484) and 2,507 with no place name, in about 3 s. In the live 48-hour window: 1,646 placed in the AOR, 20 shown.
+- **Implication:**
+  - Country-level placement is the weakest kind, so the map fills its 20 slots city- and province-level first. If country dots mislead in daily use, the next step is to drop them from the map entirely, not to add a guess.
+  - The stop list will keep growing as new sources arrive (W-1/W-4 adds ~50 channels). Each new entry needs its ordinary meaning recorded beside it, as the existing ones have.
+  - Statements made abroad can't be placed correctly by name matching alone. That needs the Analyst's reading of the item, which arrives with the Claude API key.
+  - The Write tool turned backslash-u escapes in a new source file into literal characters, including an invisible zero-width non-joiner: the same trap as the Reddit-probe regex. Escapes in the gazetteer code were regenerated programmatically, and a check confirms only comments and docstrings hold non-ASCII.

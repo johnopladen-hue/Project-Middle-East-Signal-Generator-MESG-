@@ -20,7 +20,8 @@ export function useRegionPolygon(aor) {
 }
 
 export function useGeoItems(aor) {
-  return useQuery({ queryKey: ["geo-items", aor], queryFn: () => fetchGeoItems(aor), enabled: !!aor });
+  // D-023: news dots arrive as the scheduler collects and locates, so refresh each minute.
+  return useQuery({ queryKey: ["geo-items", aor], queryFn: () => fetchGeoItems(aor), enabled: !!aor, refetchInterval: 60_000 });
 }
 
 export function useFrameDivergenceNotes(scopeType, scopeId) {

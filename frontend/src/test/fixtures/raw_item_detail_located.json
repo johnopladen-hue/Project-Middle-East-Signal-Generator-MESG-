@@ -1,0 +1,26 @@
+{
+  "id": 1,
+  "source_id": 1,
+  "source_name": "[SYNTHETIC — DEV SEED] Damascus Telegram channel",
+  "kind": null,
+  "source_class": null,
+  "pair_id": null,
+  "designation_note": null,
+  "verification_note": null,
+  "fetched_at": "2026-11-01T18:34:43.567214",
+  "published_at": null,
+  "original_lang": "ar",
+  "original_text": "[SYNTHETIC — DEV SEED] أفاد مراقبون محليون بأن تحرّكًا عسكريًا ملحوظًا في الحدود الشمالية يوم الثلاثاء.",
+  "working_text": "[SYNTHETIC — DEV SEED] Local monitors reported a noticeable military buildup near the northern border.",
+  "translation": null,
+  "url": "https://example.test/dmz-channel/post-1",
+  "location": {
+    "status": "located",
+    "place_name": "Northern Borders Region",
+    "country": "Saudi Arabia",
+    "precision": "province",
+    "latitude": 30.25,
+    "longitude": 42.4167,
+    "matched_text": "الحدود الشمالية"
+  }
+}

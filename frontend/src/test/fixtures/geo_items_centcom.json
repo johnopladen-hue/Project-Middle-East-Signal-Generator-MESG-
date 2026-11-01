@@ -436,6 +436,19 @@
       }
     ]
   },
+  "news_items": {
+    "type": "FeatureCollection",
+    "features": [],
+    "summary": {
+      "window_hours": 48,
+      "items_in_window": 7,
+      "located_in_aor": 0,
+      "shown": 0,
+      "not_located": 0,
+      "not_checked_yet": 7,
+      "attribution": "Item places: GeoNames (geonames.org), CC BY 4.0. Machine-matched from the original text; not verified."
+    }
+  },
   "unlocated": {
     "count": 3,
     "items": [

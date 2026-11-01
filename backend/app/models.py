@@ -168,6 +168,33 @@ class TranslationRecord(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
 
 
+class ItemLocation(Base):
+    """Where a RawItem's own text says it happened (D-023, map item geolocation).
+
+    One row per item, written by `app.geo.locate.locate_pending`. `status`
+    "located" carries the place; "none" records that the item was checked and
+    no place name matched (Keel P11: a category, not a blank). Placed from the
+    ORIGINAL text only, never from NLLB output. `gazetteer_version` lets a
+    rebuilt gazetteer re-check every item. A new table, so `create_all` adds
+    it with no reset (Standing Order 7)."""
+
+    __tablename__ = "item_locations"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    raw_item_id: Mapped[int] = mapped_column(ForeignKey("raw_items.id"), unique=True)
+    status: Mapped[str] = mapped_column(String(16))  # located | none
+    geonameid: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    place_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    country: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    precision: Mapped[str | None] = mapped_column(String(16), nullable=True)  # city | province | country
+    latitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+    longitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+    matched_text: Mapped[str | None] = mapped_column(String(255), nullable=True)  # the item's own words, as written
+    in_headline: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    gazetteer_version: Mapped[str] = mapped_column(String(16))
+    located_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
 class Story(Base):
     __tablename__ = "stories"
 

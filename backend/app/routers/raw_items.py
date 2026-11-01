@@ -8,13 +8,13 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import RawItem, Source, TranslationRecord
+from app.models import ItemLocation, RawItem, Source, TranslationRecord
 from app.translation.records import SUCCESS_STATUSES, failed_items, pending_items
 
 router = APIRouter(prefix="/raw-items", tags=["raw-items"])
@@ -48,6 +48,23 @@ class RawItemOut(BaseModel):
     url: str
 
     model_config = {"from_attributes": True}
+
+
+class LocationOut(BaseModel):
+    """D-023: where the item's original text says it happened, and the words
+    that said so. Machine-matched, not verified."""
+
+    status: str  # located | none
+    place_name: str | None
+    country: str | None
+    precision: str | None  # city | province | country
+    latitude: float | None
+    longitude: float | None
+    matched_text: str | None
+
+
+class RawItemDetail(RawItemOut):
+    location: LocationOut | None  # None = not checked yet
 
 
 class RawItemsPage(BaseModel):
@@ -180,4 +197,31 @@ def list_raw_items(
         awaiting_translation=awaiting_translation,
         translation_failed=translation_failed,
         silent_sources=silent_sources,
+    )
+
+
+@router.get("/{item_id}", response_model=RawItemDetail)
+def get_raw_item(item_id: int, db: Session = Depends(get_db)):
+    """One item, for the item page the map's dots open (D-023)."""
+    row = db.query(RawItem, Source).join(Source, RawItem.source_id == Source.id).filter(RawItem.id == item_id).first()
+    if row is None:
+        raise HTTPException(status_code=404, detail=f"No item {item_id}")
+    raw_item, source = row
+    out = _to_out(raw_item, source, _translations_for(db, [raw_item.id]).get(raw_item.id))
+    location = db.query(ItemLocation).filter(ItemLocation.raw_item_id == raw_item.id).first()
+    return RawItemDetail(
+        **out.model_dump(),
+        location=(
+            LocationOut(
+                status=location.status,
+                place_name=location.place_name,
+                country=location.country,
+                precision=location.precision,
+                latitude=location.latitude,
+                longitude=location.longitude,
+                matched_text=location.matched_text,
+            )
+            if location is not None
+            else None
+        ),
     )

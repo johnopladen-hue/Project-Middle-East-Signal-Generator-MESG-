@@ -3,7 +3,6 @@ import {
   Map as MapLibreMap,
   Marker,
   NavigationControl,
-  Popup,
   addProtocol,
   removeProtocol,
   setWorkerUrl,
@@ -11,6 +10,7 @@ import {
 import "maplibre-gl/dist/maplibre-gl.css";
 import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { Protocol } from "pmtiles";
+import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/primitives/Button";
@@ -35,6 +35,33 @@ const CENTCOM_BOUNDS = [
 setWorkerUrl(maplibreWorkerUrl);
 
 const PRECISION_RADIUS = { point: 5, city: 5, province: 6, country: 7 };
+// News items (D-023) in the accent red so real collected items stand apart from the synthetic stories.
+const MARKER_COLOR = { story: "#c8912a", organization: "#0e6e77", item: "#b42318" };
+
+/** What the red dots are (D-023): how many are shown of how many placed, and how they were placed. */
+function NewsCaption({ summary }) {
+  return (
+    <Card className="absolute right-14 top-4 max-w-xs">
+      <p className="flex items-center gap-2 text-xs font-semibold text-ink">
+        <span aria-hidden="true" className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: MARKER_COLOR.item }} />
+        News: {summary.shown} most recent of {summary.located_in_aor} placed (last {summary.window_hours}h)
+      </p>
+      <p className="mt-1 text-xs text-ink-muted">
+        Placed where the item&apos;s original text names a place, city-level first. Machine-matched, not verified.{" "}
+        {summary.not_located} items named no place and are not shown.
+      </p>
+    </Card>
+  );
+}
+
+NewsCaption.propTypes = {
+  summary: PropTypes.shape({
+    shown: PropTypes.number.isRequired,
+    located_in_aor: PropTypes.number.isRequired,
+    window_hours: PropTypes.number.isRequired,
+    not_located: PropTypes.number.isRequired,
+  }).isRequired,
+};
 
 /** Geographic map view (D-014/D-015, O-3/O-4/O-6/O-8/O-9): self-hosted
  * basemap, CENTCOM AOR labeled as the U.S. command lens, located-item
@@ -70,7 +97,9 @@ export function MapView() {
       maxZoom: BASEMAP_MAX_ZOOM, // the tiles stop at z5; deeper zoom only stretches them
       attributionControl: false,
     });
-    map.addControl(new AttributionControl({ compact: false }));
+    map.addControl(
+      new AttributionControl({ compact: false, customAttribution: "Item places: © GeoNames (CC BY 4.0)" }),
+    );
     map.addControl(new NavigationControl(), "top-right");
     mapRef.current = map;
 
@@ -100,49 +129,35 @@ export function MapView() {
     else map.once("load", apply);
   }, [polygonQuery.data]);
 
-  // Located-item markers with thin call-out popups deep-linking to existing detail.
+  // One dot per located Story/Organization and per placed news item (D-023).
+  // Clicking a dot goes straight to its detail page; hovering shows its title.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !geoQuery.data) return;
 
-    const markers = geoQuery.data.located.features.map((feature) => {
+    const features = [...geoQuery.data.located.features, ...(geoQuery.data.news_items?.features ?? [])];
+    const markers = features.map((feature) => {
       const [lon, lat] = feature.geometry.coordinates;
-      const { title, precision, detail_url: detailUrl, kind } = feature.properties;
+      const { title, precision, detail_url: detailUrl, kind, place_name: placeName } = feature.properties;
+      const label = kind === "item" ? `${title} — ${placeName}` : title;
 
       const el = document.createElement("button");
       el.type = "button";
-      el.setAttribute("aria-label", title);
+      el.setAttribute("aria-label", label);
+      el.title = label;
       el.style.width = `${(PRECISION_RADIUS[precision] ?? 5) * 2}px`;
       el.style.height = `${(PRECISION_RADIUS[precision] ?? 5) * 2}px`;
       el.style.borderRadius = "50%";
       el.style.border = "2px solid white";
-      el.style.background = kind === "organization" ? "#0e6e77" : "#c8912a";
+      el.style.background = MARKER_COLOR[kind] ?? MARKER_COLOR.story;
       el.style.cursor = "pointer";
       el.style.padding = 0;
-
-      const popupNode = document.createElement("div");
-      popupNode.className = "text-sm";
-      const heading = document.createElement("p");
-      heading.className = "font-medium text-ink";
-      heading.textContent = title;
-      const meta = document.createElement("p");
-      meta.className = "text-xs text-ink-muted";
-      meta.textContent = `${kind} · ${precision} precision`;
-      const link = document.createElement("a");
-      link.href = detailUrl;
-      link.textContent = "Open detail →";
-      link.className = "text-xs text-accent hover:underline";
-      link.addEventListener("click", (event) => {
-        event.preventDefault();
-        navigate(detailUrl);
+      el.addEventListener("click", (event) => {
+        event.stopPropagation();
+        navigate(detailUrl, { state: { from: "map" } });
       });
-      popupNode.append(heading, meta, link);
 
-      const marker = new Marker({ element: el })
-        .setLngLat([lon, lat])
-        .setPopup(new Popup({ offset: 12 }).setDOMContent(popupNode))
-        .addTo(map);
-      return marker;
+      return new Marker({ element: el }).setLngLat([lon, lat]).addTo(map);
     });
 
     return () => markers.forEach((m) => m.remove());
@@ -177,6 +192,8 @@ export function MapView() {
 
       <div className="relative flex-1">
         <div ref={mapContainerRef} className="h-full w-full" />
+
+        {geoQuery.data?.news_items ? <NewsCaption summary={geoQuery.data.news_items.summary} /> : null}
 
         {geoQuery.data ? (
           <Card className="absolute bottom-4 left-4 max-w-xs">
