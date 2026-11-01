@@ -19,6 +19,7 @@ from app.database import SessionLocal, init_db, seed_dev_user
 from app.geo.regions import seed_aor_memberships
 from app.routers.auth import router as auth_router
 from app.routers.briefs import router as briefs_router
+from app.routers.capabilities import router as capabilities_router
 from app.routers.admin import router as admin_router
 from app.routers.frame_divergence import router as frame_divergence_router
 from app.routers.geo import router as geo_router
@@ -56,6 +57,7 @@ app.add_middleware(SessionMiddleware, secret_key=os.environ.get("MESG_SESSION_SE
 
 app.include_router(auth_router)
 app.include_router(briefs_router)
+app.include_router(capabilities_router)
 app.include_router(admin_router)
 app.include_router(frame_divergence_router)
 app.include_router(geo_router)

@@ -93,6 +93,9 @@ def main() -> None:
     _write("regions.json", client.get("/regions").json())
     _write("geo_items_centcom.json", client.get("/geo/items", params={"aor": "CENTCOM"}).json())
 
+    # U-5: the honesty banner's state over the dev seed alone - nothing collected,
+    # synthetic briefs present. Tests derive the other states from this real shape.
+    _write("capabilities.json", client.get("/capabilities").json())
     _write("pipeline_status.json", _capture_pipeline_status(client))
 
     os.close(_fd)
