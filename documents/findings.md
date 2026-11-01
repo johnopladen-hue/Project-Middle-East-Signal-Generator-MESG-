@@ -279,3 +279,20 @@ For each entry:
 - **Context:** Merging the Owner-approved PRs #34 (U-2) and #33 (map legibility) at the start of the session.
 - **Finding:** #33's base branch was `usable-today-u2-nllb`, not `main`: it was a stacked PR, opened on top of U-2 on 2026-10-11. Merging #34 first and then #33 put #33's two commits (`efa8812`, `e312af7`) into the already-merged U-2 branch, so **they never reached `main`**. The merge API reported `merged: true` both times. This came to light only because a later `git log origin/main` didn't show `43d1b5e`, and the PR's `base.ref` confirmed it. The Owner was told the map changes had landed when they had not, and that was corrected the same session. The changes were re-opened against `main` unchanged as #35.
 - **Implication:** "Merged" is not "on `main`". Before merging, check each PR's `base.ref`. After merging, confirm the merge commit is an ancestor of `origin/main` before reporting it as landed. A stacked PR has to be retargeted to `main` before its parent merges, or it strands.
+
+- **Date:** 2026-11-01
+- **Context:** A one-off probe of keyless Reddit feeds, run by Code on the Owner's PC at the Owner's request. The script is `probe_reddit.py`, supplied by the Owner and not committed. It requested `https://www.reddit.com/r/<sub>/new/.rss?limit=100` for 15 candidate subreddits: Iran/Persian (iran, NewIran, irani, Iranian), Levant/Arabic (lebanon, syria, jordan, Palestine, arabs, iraq), Israel/Hebrew (Israel, israelexposed) and region-wide (MiddleEastNews, syriancivilwar, CombatFootage). Same posture as every MESG collector (D-018, collection posture): User-Agent `MESGBot/0.1`, 3 s between requests, no login, no browser spoofing, and no retry around a block. Reddit was already on D-018's list as "deferred, not rejected"; this was the first real check of the keyless path. One defect was fixed before the run: the pasted script's Arabic-script regex had lost the end of its last range (`ﹰ-]`), so it also matched a literal hyphen and would have counted every hyphenated title as Arabic. It was rewritten with explicit escapes (`ﹰ-ﻼ`) and checked: a hyphen no longer matches, and Arabic still does.
+- **Finding:** **1 of 15 feeds returned entries.** Only the first request succeeded; **all 14 after it got HTTP 429 Too Many Requests** with an empty body. The 3 s spacing did not prevent it, and the block was recorded, not retried.
+
+  | Subreddit | Status | Entries | Span | Arabic-script / Hebrew entries |
+  |---|---|---|---|---|
+  | r/iran | 200 | 100 | 2026-10-04T02:51Z → 2026-11-01T13:13Z | 5 / 0 |
+  | the other 14, in list order | 429 | – | – | – |
+
+  - The 429s say nothing about the other 14 names. None was ever checked: there was no 404, no redirect and no private-sub response. List order alone decided which sub got through.
+  - r/iran writes in English. All 5 sampled titles are English diaspora discussion or reposted news, and only 5 of 100 entries contain any Arabic-script text. That matches D-018's "mostly English".
+- **Implication:**
+  - **Reddit's keyless RSS cannot sustain even a 15-feed sweep at MESG's polite pace from this machine.** A collector built on it would be throttled after its first request. That keeps Reddit where D-018 already puts it: deferred, with no new D-number.
+  - Reddit's official route is its authenticated Data API, which needs a registered app, i.e. a credential. That is outside D-018's keyless posture, and its terms still need the careful read D-018 asks for. Adopting it would need a new D-number and a check against D-020 (the go-remote tripwire). It is a Planner call; nothing is built.
+  - If Reddit is revisited keylessly, the one test still worth running is a much slower sweep (e.g. one sub per 60 s, about 15 min in total) to tell a short burst limit from a standing block. That is slower polling, not evasion. Not run, pending the Owner's call.
+  - For MESG's purpose (primary-language voices), the one sub that answered is a weak candidate. Weigh it against the Telegram channels already in D-021 (v1 approved source set) before spending more effort here.
