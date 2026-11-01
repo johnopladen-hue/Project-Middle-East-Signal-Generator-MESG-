@@ -240,3 +240,8 @@ For each entry:
   - Proving a boundary with one mutant is not proof for every boundary of the same kind: mutate each comparison.
   - U-3 is not at its stopping point until the Owner's PC run is recorded.
 
+
+- **Date:** 2026-11-01
+- **Context:** Merging the Owner-approved PRs #34 (U-2) and #33 (map legibility) at the start of the session.
+- **Finding:** #33's base branch was `usable-today-u2-nllb`, not `main`: it was a stacked PR, opened on top of U-2 on 2026-10-11. Merging #34 first and then #33 put #33's two commits (`efa8812`, `e312af7`) into the already-merged U-2 branch, so **they never reached `main`**. The merge API reported `merged: true` both times. This came to light only because a later `git log origin/main` didn't show `43d1b5e`, and the PR's `base.ref` confirmed it. The Owner was told the map changes had landed when they had not, and that was corrected the same session. The changes were re-opened against `main` unchanged as #35.
+- **Implication:** "Merged" is not "on `main`". Before merging, check each PR's `base.ref`. After merging, confirm the merge commit is an ancestor of `origin/main` before reporting it as landed. A stacked PR has to be retargeted to `main` before its parent merges, or it strands.
