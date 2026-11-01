@@ -31,16 +31,16 @@ Delivered via web application, SMS text, and email, to start.
 
 | Component | Purpose | Status |
 |---|---|---|
-| Source ingestion | Collect native-language discourse + English media | Not started |
-| Translation / normalization | Convert native-language sources for analysis | Not started |
+| Source ingestion | Collect native-language discourse + English media | **Running** — RSS (30 feeds) + Telegram (17 channels), scheduled (U-3, D-019); see Ingestion below |
+| Translation / normalization | Convert native-language sources for analysis | **Running (triage only)** — NLLB-200 headline+lede (U-2, D-016); Claude deep pass not built |
 | Corroboration / veracity engine | Score source access & reliability, cross-check claims | Not started |
 | Divergence/convergence analysis | Compare native discourse vs. English media narrative | Not started |
 | Daily brief generator | Produce bulleted, scored daily summary | Not started |
 | Alerting engine | Detect bulletin-worthy events, trigger email/SMS | Not started |
 | Weekly summary generator | "What Mattered This Week," Fridays | Not started |
-| Web application | Deliver briefs/alerts, manage subscribers | Not started |
-| Auth / access control | Username + password (v1), whitelisted recipients | Not started |
-| Notification delivery | Email + SMS to whitelisted individuals | Not started |
+| Web application | Deliver briefs/alerts, manage subscribers | **Built, localhost** — all UI-spec routes; brief/alert/weekly views render seeded synthetic data until the Analyst exists |
+| Auth / access control | Username + password (v1), whitelisted recipients | **Built** — argon2 + session cookie, admin/viewer roles (D-005, D-010) |
+| Notification delivery | Email + SMS to whitelisted individuals | Interface + whitelist enforcement only; provider not chosen (TDD §4.7) |
 
 ## Data Flow (to be diagrammed as design matures)
 
@@ -56,7 +56,10 @@ Per [D-009](decisions/D-009-v1-technology-stack.md):
 | Database | SQLAlchemy ORM; PostgreSQL (production, per D-009) / SQLite (local dev, a real file at `backend/mesg_dev.db`) / SQLite temp-file (self-contained test suite, `backend/tests/conftest.py`) |
 | Frontend | React + Vite, plain JavaScript |
 | Auth | Username/password (argon2 hash), httpOnly session cookies |
-| Translation, Analysis/LLM, Email, SMS, Scheduler, Hosting | Interface-based, deferred pending vendor decision — see `decisions.md` open list |
+| Translation | NLLB-200 distilled-600M via CTranslate2 int8, triage only ([D-016](decisions/D-016-translation-analysis-providers.md)) |
+| Scheduler | APScheduler 3.x `BackgroundScheduler` inside the backend, localhost ([D-019](decisions/D-019-scheduler-runtime.md)) |
+| Hosting | Fly.io decided, unbuilt; localhost until the go-remote tripwire ([D-011](decisions/D-011-hosting-platform-and-deploy-mechanism.md), [D-020](decisions/D-020-go-remote-tripwire-amendment.md)) |
+| Analysis/LLM, Email, SMS | Interface-based with fakes; Claude deep pass awaits the API key, delivery providers undecided |
 
 **v1 source scope** (per [D-008](decisions/D-008-v1-source-scope.md)): Levantine Arabic and Iranian Persian, from `documents/reference/Languages_and_Religions.md`.
 
@@ -92,9 +95,9 @@ HarvestResult(actors=(...), relationships=(...))
 
 **The map's frame is a lens, not neutral geography.** Regions are the U.S. Unified Command Plan's Areas of Responsibility (`AorMembership`, v1 = CENTCOM, [D-015](decisions/D-015-region-taxonomy-ucp-aors.md)) — stored as a **dated, versioned** fact (source + source_date per row), because AOR boundaries shift (Israel: EUCOM → CENTCOM, 2021-01-15). The UI labels this explicitly as the U.S. command frame, and a `FrameDivergenceNote` lets an analyst record where in-region self-conception diverges from it — the map's honesty about its own frame is a feature, not a footnote.
 
-## Ingestion (D-016–D-021) — real RSS + Telegram collection and NLLB triage translation running; scheduling not yet built
+## Ingestion (D-016–D-021) — real RSS + Telegram collection and NLLB triage translation, running on a schedule
 
-**Status honestly: RSS and Telegram collection and NLLB triage translation are real, run manually (`--once`); scheduling is not built yet.** v1 scope is three language communities — Levantine Arabic, Iranian Persian, Israeli Hebrew ([D-017](decisions/D-017-v1-scope-add-hebrew.md)) — plus English comparison outlets, collected from RSS/Atom and Telegram's public web preview only, keyless, no accounts ([D-018](decisions/D-018-collection-posture.md)).
+**Status honestly: RSS and Telegram collection and NLLB triage translation are real and run on their own while the backend is started with `scripts/run.py` (U-3); `--once` still works for development.** v1 scope is three language communities — Levantine Arabic, Iranian Persian, Israeli Hebrew ([D-017](decisions/D-017-v1-scope-add-hebrew.md)) — plus English comparison outlets, collected from RSS/Atom and Telegram's public web preview only, keyless, no accounts ([D-018](decisions/D-018-collection-posture.md)).
 
 **RSS collector, real (`app/ingestion/rss_collector.py`, `python -m app.ingest --once`).** Parsing is pure and gate-tested against a genuine captured feed excerpt; the one network-touching function (`fetch_feed`) is exercised only by a real run, never the offline suite (the same split MESG's actor-network harvesters already use). First-run backfill is capped at 48 hours so the first pass isn't a flood; dedupes on `content_hash` or `url`; strips embedded HTML from titles/descriptions before storage (some feeds, e.g. Ynet, embed raw `<img>`/`<a>` markup in their description field). First real run, 2026-09-27: **712 items from 26 of 30 approved feeds**; 4 blocked at the CDN/WAF level (HTTP 403, same pattern as `state.gov`/`centcom.mil` elsewhere in this project) — see `findings.md`.
 
@@ -110,7 +113,9 @@ HarvestResult(actors=(...), relationships=(...))
 
 **Source registry, now populated with 47 real, Owner-approved rows ([D-021](decisions/D-021-v1-approved-source-set.md)).** `Source` carries `kind` (`rss`/`telegram`/`corroboration`), `source_class` (`native`/`pre_translated`/`english_comparison`/`corroboration`), `translator_selector`, `pair_id`, `designation_note`, and `verification_note` (authenticity/lag/liveness caveats, distinct from `designation_note`), all exposed through `/admin/sources` (`Sources.jsx` shows kind, class, a "Designated" flag, and pair). The approved set itself lives as data, not code, in `backend/app/sources/approved_sources_v1.yaml`, seeded idempotently via `python -m app.sources.seed_approved` (`Source.seed_key` is the upsert identity — a manual admin edit to `active`/`credibility_prior` survives a reseed). The seeder validates at load and fails loudly on a bad row (unknown `kind`/`source_class`, a `pre_translated` row with no `translator_selector`, a `pair_id` without exactly one non-English + at least one English member). Designated/sanctioned sources (Al-Manar, Fars, Palestinian Information Center, Press TV) are included, flagged, and read-only per D-018 — never republished wholesale.
 
-**Not yet built:** continuous scheduled collection + translation via APScheduler (U-3, was I-7, a slice of D-019); the Claude deep pass and the O-3 NLLB-vs-Claude bake-off (need the Owner's API key).
+**Scheduler, real (`app/scheduler.py`, U-3; [D-019](decisions/D-019-scheduler-runtime.md)).** An APScheduler 3.x `BackgroundScheduler` inside the FastAPI process, started from the lifespan. Three jobs: `rss` every 30 min, `telegram` every 15 min, `translate` every 5 min (at most 500 items per run, newest first), each `max_instances=1`, `coalesce=True`, each using its own `SessionLocal()` session. Every run writes one `IngestRun` row (new table: job, start/finish, status `ok`/`partial`/`failed`/`skipped_paused`, items new, sources failed, notes). On start, a job whose last successful run is older than its interval, or that never ran, runs at once: catch-up after wake, computed from `IngestRun` rather than left to APScheduler's misfire grace. Two start guards: it starts only with `MESG_SCHEDULER=1` (set by `scripts/run.py`, never by the test suite or `scripts/dev.py`), and only if it can take the `filelock` on `backend/data/scheduler.lock`, so one checkout runs one scheduler. A missing NLLB model makes each translate run `failed` with the instruction in `notes`, retried every run, so installing the model needs no restart. SQLite runs in WAL mode with a 30 s lock timeout so the API keeps reading while a job writes. Admins pause/resume through `POST /admin/pipeline/pause|resume` (`Settings.values["ingest_paused"]`); a paused run is recorded as `skipped_paused`. `GET /pipeline/status` reports per-job last run and status, collection gaps over 7 days (consecutive successful runs more than 2× the interval apart, strictly; plus an open gap when the newest success is itself that old), the pause flag and whether a scheduler is running; `PipelineStatusStrip` shows each in words: "Scheduler off", "Ingestion paused", "<job> failing", "Collection gap since HH:MM".
+
+**Not yet built:** the Claude deep pass and the O-3 NLLB-vs-Claude bake-off (need the Owner's API key).
 
 **Geo endpoint precision (O-7).** `GET /geo/items` returns located items as GeoJSON points with a `precision` field (`point`/`city`/`province`/`country`) and puts everything without a known location in a **separate unlocated set** — never a fake coordinate (Principle 11). Country-level precision (e.g. every harvested `Organization`, via its `Theatre`) comes from an offline centroid lookup (`app/geo/country_centroids.json`, computed from public-domain Natural Earth data) — no live geocoder call, per D-014.
 
@@ -122,3 +127,4 @@ HarvestResult(actors=(...), relationships=(...))
 | 2026-09-13 | Hosting platform decided (D-011); named the dev/prod SQLite-vs-PostgreSQL divergence as a known risk | `MESG-First-Article-Localhost-Orders-v0.1.md` O-2 |
 | 2026-09-13 | Actor-network layer added (D-012): Organization/Alias/Designation/Relationship/Theatre schema + the ActorRecord harvester contract | `MESG-Actor-Network-Layer-Orders-v0.2.md` O-2 |
 | 2026-09-13 | Map interface added (D-014/D-015): self-hosted MapLibre+PMTiles basemap, contested-boundary stance, CENTCOM AOR as a labeled U.S. lens, geo endpoint precision model | `MESG-Map-Interface-Orders-v0.1.md` O-4/O-6/O-7 |
+| 2026-11-01 | Scheduler built (U-3, D-019); component table and tech stack brought up to live state (they still said "Not started" / "deferred" for pieces built since 2026-09-06) | `MESG-Orders-Usable-Today-v0.1.md` U-3 |
