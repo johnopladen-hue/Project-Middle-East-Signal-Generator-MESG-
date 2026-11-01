@@ -6,7 +6,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { geoItemsCentcom, regions } from "../test/fixtures";
+import { geoItemsCentcom, geoItemsNews, regions } from "../test/fixtures";
 import { server } from "../test/mocks/server";
 import { MapView } from "./MapView";
 
@@ -117,7 +117,7 @@ function LocationProbe() {
   return <p data-testid="location">{location.pathname}</p>;
 }
 
-function serveMapApis({ notes = [] } = {}) {
+function serveMapApis({ notes = [], geo = geoItemsCentcom } = {}) {
   const posted = [];
   server.use(
     http.get("/api/regions", () => HttpResponse.json(regions)),
@@ -126,7 +126,7 @@ function serveMapApis({ notes = [] } = {}) {
         ? HttpResponse.json(centcomPolygon)
         : HttpResponse.json({ detail: "No polygon" }, { status: 404 }),
     ),
-    http.get("/api/geo/items", () => HttpResponse.json(geoItemsCentcom)),
+    http.get("/api/geo/items", () => HttpResponse.json(geo)),
     http.get("/api/frame-divergence-notes", () => HttpResponse.json([...posted].reverse().concat(notes))),
     http.post("/api/frame-divergence-notes", async ({ request }) => {
       const body = await request.json();
@@ -205,7 +205,7 @@ describe("MapView (D-014, D-015)", () => {
     // ODbL requires visible OSM attribution: a non-compact AttributionControl must be added.
     const attribution = map.controls.find((c) => c.control.constructor.name === "AttributionControl");
     expect(attribution).toBeDefined();
-    expect(attribution.control.options).toEqual({ compact: false });
+    expect(attribution.control.options).toEqual({ compact: false, customAttribution: "Item places: © GeoNames (CC BY 4.0)" });
   });
 
   it("points MapLibre at its real worker file, so tiles decode even when Vite pre-bundles the library", () => {
@@ -244,7 +244,7 @@ describe("MapView (D-014, D-015)", () => {
     });
   });
 
-  it("deep-links a marker's call-out to the item's existing detail route via SPA navigation", async () => {
+  it("goes straight to a story's or organization's detail page when its dot is clicked", async () => {
     serveMapApis();
     renderMap();
 
@@ -252,26 +252,50 @@ describe("MapView (D-014, D-015)", () => {
     for (const kind of ["story", "organization"]) {
       const index = located.findIndex((f) => f.properties.kind === kind);
       expect(index).toBeGreaterThanOrEqual(0); // guard: captured data still has both kinds
-      const { detail_url: detailUrl, precision } = located[index].properties;
-      const popupNode = fake.state.markers[index].popup.node;
-      document.body.append(popupNode); // what MapLibre does when the popup opens
-
-      expect(within(popupNode).getByText(`${kind} · ${precision} precision`)).toBeInTheDocument();
-      const link = within(popupNode).getByRole("link", { name: "Open detail →" });
-      expect(link).toHaveAttribute("href", detailUrl);
+      expect(fake.state.markers[index].element).toHaveAttribute("title", located[index].properties.title);
     }
-
-    // Clicking navigates in-app to the detail route, and the browser's own full-page
-    // navigation is suppressed (jsdom never performs it, so assert it was prevented).
     const storyIndex = located.findIndex((f) => f.properties.kind === "story");
-    const link = within(fake.state.markers[storyIndex].popup.node).getByRole("link");
-    let defaultPrevented = null;
-    link.addEventListener("click", (event) => {
-      defaultPrevented = event.defaultPrevented;
-    });
-    await userEvent.click(link);
-    expect(defaultPrevented).toBe(true);
+    const dot = fake.state.markers[storyIndex].element;
+    document.body.append(dot); // MapLibre attaches marker elements to the map container
+    await userEvent.click(dot);
     expect(await screen.findByTestId("location")).toHaveTextContent(located[storyIndex].properties.detail_url);
+  });
+
+  it("puts one red dot per placed news item where its text says it happened, named with the place (D-023)", async () => {
+    serveMapApis({ geo: geoItemsNews });
+    renderMap();
+
+    const news = geoItemsNews.news_items.features;
+    expect(news.length).toBeGreaterThan(0); // guard: the captured fixture placed items
+    const total = geoItemsNews.located.features.length + news.length;
+    await waitFor(() => expect(fake.state.markers).toHaveLength(total));
+    news.forEach((feature) => {
+      const marker = fake.state.markers.find((m) => m.element.getAttribute("aria-label") === `${feature.properties.title} — ${feature.properties.place_name}`);
+      expect(marker).toBeDefined();
+      expect(marker.lngLat).toEqual(feature.geometry.coordinates);
+    });
+  });
+
+  it("opens the news item's own page in one click on its dot", async () => {
+    serveMapApis({ geo: geoItemsNews });
+    renderMap();
+
+    const feature = geoItemsNews.news_items.features[0];
+    const label = `${feature.properties.title} — ${feature.properties.place_name}`;
+    await waitFor(() => expect(fake.state.markers.some((m) => m.element.getAttribute("aria-label") === label)).toBe(true));
+    const dot = fake.state.markers.find((m) => m.element.getAttribute("aria-label") === label).element;
+    document.body.append(dot);
+    await userEvent.click(dot);
+    expect(await screen.findByTestId("location")).toHaveTextContent(`/incoming/${feature.properties.id}`);
+  });
+
+  it("says how many news dots are shown of how many were placed, and that placement is machine-matched", async () => {
+    serveMapApis({ geo: geoItemsNews });
+    renderMap();
+
+    const { shown, located_in_aor: placed, window_hours: hours } = geoItemsNews.news_items.summary;
+    expect(await screen.findByText(`News: ${shown} most recent of ${placed} placed (last ${hours}h)`)).toBeInTheDocument();
+    expect(screen.getByText(/Machine-matched, not verified/)).toBeInTheDocument();
   });
 
   it("never drops unlocated items: the tray reports the count against the reconciled total and lists them (A-007)", async () => {

@@ -74,13 +74,14 @@ def test_env_flag_absent_means_no_scheduler(tmp_path):
     assert sched.is_running() is False
 
 
-def test_started_scheduler_registers_all_three_jobs_with_their_intervals(tmp_path):
+def test_started_scheduler_registers_all_four_jobs_with_their_intervals(tmp_path):
     running = sched.start_scheduler(SessionLocal, env={"MESG_SCHEDULER": "1"}, lock_path=tmp_path / "s.lock", **START)
     jobs = {job.id: job for job in running.scheduler.get_jobs()}
     assert {job_id: (j.trigger.interval, j.max_instances, j.coalesce) for job_id, j in jobs.items()} == {
         "rss": (timedelta(minutes=30), 1, True),
         "telegram": (timedelta(minutes=15), 1, True),
         "translate": (timedelta(minutes=5), 1, True),
+        "locate": (timedelta(minutes=5), 1, True),
     }
 
 
@@ -128,6 +129,7 @@ def test_started_scheduler_schedules_catch_up_from_ingest_run_history(tmp_path):
         "rss": T0 + timedelta(minutes=20),
         "telegram": T0,
         "translate": T0,
+        "locate": T0,  # never run -> now
     }
 
 

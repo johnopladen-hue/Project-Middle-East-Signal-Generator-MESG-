@@ -82,7 +82,8 @@ const CLASS_OPTIONS = [
   { value: "corroboration", label: "Corroboration" },
 ];
 
-function ItemCard({ item }) {
+/** One collected item: source, time, badges, triage line, original. Also the body of the item page (D-023). */
+export function ItemCard({ item }) {
   const isRtl = RTL_LANGUAGES.has(item.original_lang);
   const isUnconfirmed = (item.verification_note ?? "").includes("AUTHENTICITY UNCONFIRMED");
 

@@ -1,0 +1,26 @@
+{
+  "id": 2,
+  "source_id": 4,
+  "source_name": "[SYNTHETIC — DEV SEED] Persian-language forum",
+  "kind": null,
+  "source_class": null,
+  "pair_id": null,
+  "designation_note": null,
+  "verification_note": null,
+  "fetched_at": "2026-11-01T19:34:43.567214",
+  "published_at": null,
+  "original_lang": "fa",
+  "original_text": "[SYNTHETIC — DEV SEED] ناظران محلی گزارش دادند که حرکت وسیع تقویت‌ها در نزدیکی مرز روز سه‌شنبه رخ داد.",
+  "working_text": "[SYNTHETIC — DEV SEED] Forum users report a large movement of forces near the border.",
+  "translation": null,
+  "url": "https://example.test/fa-forum/thread-42",
+  "location": {
+    "status": "none",
+    "place_name": null,
+    "country": null,
+    "precision": null,
+    "latitude": null,
+    "longitude": null,
+    "matched_text": null
+  }
+}

@@ -86,6 +86,15 @@ def main() -> None:
     _print_telegram_report(telegram_results, telegram_elapsed)
     print()
 
+    # Locating needs only the original text, so it runs before translation
+    # (D-023) and still happens if the NLLB model is missing.
+    from app.geo.locate import locate_pending
+    from app.geo.locate import print_report as print_locate_report
+
+    with SessionLocal() as db:
+        print_locate_report(locate_pending(db))
+    print()
+
     from app.translation.nllb import NllbModelMissing, NllbTranslator
     from app.translation.run import print_report, translate_pending
 

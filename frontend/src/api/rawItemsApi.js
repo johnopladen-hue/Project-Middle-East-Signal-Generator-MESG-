@@ -23,3 +23,7 @@ export function fetchRawItems({
   params.set("offset", offset);
   return apiClient.get(`/raw-items?${params.toString()}`);
 }
+
+export function fetchRawItem(id) {
+  return apiClient.get(`/raw-items/${encodeURIComponent(id)}`);
+}

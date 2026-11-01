@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { fetchRawItems } from "../api/rawItemsApi";
+import { fetchRawItem, fetchRawItems } from "../api/rawItemsApi";
 
 // U-4: the scheduler (U-3) collects on its own, so the feed refetches every
 // minute. The Incoming page pins the list to a baseline id, so a refetch
@@ -13,4 +13,9 @@ export function useRawItems(filters) {
     refetchInterval: RAW_ITEMS_REFETCH_MS,
     placeholderData: keepPreviousData,
   });
+}
+
+/** One item, for the item page a map dot opens (D-023). */
+export function useRawItem(id) {
+  return useQuery({ queryKey: ["raw-item", id], queryFn: () => fetchRawItem(id), enabled: id != null });
 }
