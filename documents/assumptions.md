@@ -86,3 +86,14 @@ For each entry:
 - **Falsifying test:** after the widened set has run for 30 days, divergence findings are dominated by a handful of high-volume channels, or flip when one perspective's channels are excluded (a per-perspective sensitivity check once the Analyst exists).
 - **If false:** the selection itself is the bias. Rebalance the channel set by perspective and volume, and say so in the brief, before trusting divergence conclusions.
 
+- **ID:** A-013
+- **Date:** 2026-11-01
+- **Assumption:** Deterministic term rules give usable precision for topic drill-down ([D-024](decisions/D-024-topic-tagging-term-rules.md)).
+- **Falsifying test:** after 100 or more Owner flags on a topic (Topic quality page, TP-6), precision = relevant ÷ (relevant + not relevant) is below 80%.
+- **If false:** tighten that topic's rules, or add the Claude second pass for that topic once the Analyst exists.
+
+- **ID:** A-014
+- **Date:** 2026-11-01
+- **Assumption:** Deterministic term rules miss few relevant items ([D-024](decisions/D-024-topic-tagging-term-rules.md)).
+- **Falsifying test:** in the "review untagged" sample (TP-6; at least 50 items reviewed over 3 or more days), more than 10% of reviewed untagged items get marked "belongs to topic X".
+- **If false:** run term discovery (TP-3) on the misses, or adopt the semantic option.

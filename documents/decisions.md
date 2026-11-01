@@ -29,6 +29,7 @@
 | [D-021](decisions/D-021-v1-approved-source-set.md) | v1 approved source set (47 sources: RSS + Telegram, designated sources flagged) | 2026-09-27 | Decided | — |
 | [D-022](decisions/D-022-bounded-scope-and-voice-widening.md) | Bounded scope (public in-region voices vs English media); widen Telegram; Reddit by research application | 2026-11-01 | Decided | Extends D-018; narrows the mission statement |
 | [D-023](decisions/D-023-map-item-geolocation.md) | Map item geolocation: place names in the original text (GeoNames, offline), top 20 on the map, one click to the item | 2026-11-01 | Decided | Extends D-014 |
+| [D-024](decisions/D-024-topic-tagging-term-rules.md) | Topic tagging: deterministic multilingual term rules, Owner-maintained in-app (v1: U.S.–Iran War, Houthis, Gulf States) | 2026-11-01 | Decided | — |
 
 ## Open Decisions / Pending (not yet a D-file)
 
