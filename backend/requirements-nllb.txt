@@ -1,0 +1,5 @@
+# NLLB triage translator runtime (D-016, U-2). Not installed by CI:
+# app.translation.nllb imports these lazily, and the suite never needs them.
+# The model itself is converted locally into backend/models/ (gitignored).
+ctranslate2==4.8.2
+sentencepiece==0.2.2

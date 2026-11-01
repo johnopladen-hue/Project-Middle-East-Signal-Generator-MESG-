@@ -2,8 +2,9 @@
 U-1 of MESG-Orders-Usable-Today-v0.1.md).
 
 `python -m app.ingest --once` runs one real collection pass: every active
-`kind=rss` Source, then every active `kind=telegram` Source. Translation
-(U-2) is not wired in yet.
+`kind=rss` Source, then every active `kind=telegram` Source, then the NLLB
+triage translator over everything still untranslated (U-2). A missing model
+is a hard error (exit 2) after the collection reports, never a skip.
 """
 
 from __future__ import annotations
@@ -83,6 +84,18 @@ def main() -> None:
     _print_rss_report(rss_results, rss_elapsed)
     print()
     _print_telegram_report(telegram_results, telegram_elapsed)
+    print()
+
+    from app.translation.nllb import NllbModelMissing, NllbTranslator
+    from app.translation.run import print_report, translate_pending
+
+    try:
+        translator = NllbTranslator()
+    except NllbModelMissing as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        raise SystemExit(2) from exc
+    with SessionLocal() as db:
+        print_report(translate_pending(db, translator))
 
 
 if __name__ == "__main__":

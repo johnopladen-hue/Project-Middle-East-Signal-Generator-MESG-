@@ -129,6 +129,86 @@ describe("Incoming (D-018, I-5/S-5)", () => {
     expect(await screen.findByText("Couldn't load incoming items.")).toBeInTheDocument();
   });
 
+  // U-2 (D-016): genuine collected posts (Al Jazeera Mubasher 510450, BBC Persian
+  // 293180) with the real NLLB-200 output the local model produced for them.
+  const TRANSLATED_ITEM = {
+    id: 10,
+    source_id: 10,
+    source_name: "Al Jazeera Mubasher",
+    kind: "telegram",
+    source_class: "native",
+    pair_id: null,
+    designation_note: null,
+    verification_note: null,
+    fetched_at: "2026-10-11T15:30:00Z",
+    published_at: "2026-10-11T14:38:36Z",
+    original_lang: "ar",
+    original_text: "عاجل | المتحدث باسم التحالف: اعتداء بمقذوف مجهول على صالة المسافرين رقم 4 بمطار الملك خالد الدولي",
+    working_text:
+      "Coalition spokesman: An unknown assault on passenger lounge number four at King Khalid International Airport.",
+    translation: { status: "ok", engine: "nllb-200-distilled-600M-ct2-int8", src_code: "arb_Arab" },
+    url: "https://t.me/ajmubasher/510450",
+  };
+
+  function serveItems(items, extra = {}) {
+    server.use(
+      http.get("/api/raw-items", () =>
+        HttpResponse.json({ ...BASE_PAGE, translation_failed: 0, total: items.length, items, ...extra }),
+      ),
+    );
+  }
+
+  it("labels a translated line as unverified machine triage and shows the original beneath it", async () => {
+    serveItems([TRANSLATED_ITEM]);
+    renderIncoming();
+
+    const english = await screen.findByText(TRANSLATED_ITEM.working_text);
+    const original = screen.getByText(TRANSLATED_ITEM.original_text);
+    expect(screen.getByText("Machine triage translation (NLLB-200), not verified")).toBeInTheDocument();
+    expect(english.compareDocumentPosition(original) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(english).toHaveAttribute("lang", "en");
+  });
+
+  it("marks a truncated translation as first part only", async () => {
+    serveItems([
+      {
+        ...TRANSLATED_ITEM,
+        id: 11,
+        source_name: "BBC Persian",
+        original_lang: "fa",
+        original_text: "🔻 ترامپ: روسیه و اوکراین با «آتش‌بس زیرساخت‌های انرژی» موافقت کردند",
+        working_text: "Trump: Russia and Ukraine agreed to a ceasefire on energy infrastructure",
+        translation: { status: "ok_truncated", engine: "nllb-200-distilled-600M-ct2-int8", src_code: "pes_Arab" },
+      },
+    ]);
+    renderIncoming();
+
+    expect(await screen.findByText(/first part only/)).toBeInTheDocument();
+  });
+
+  it("says translation failed and still shows the original, never a blank", async () => {
+    serveItems([
+      {
+        ...TRANSLATED_ITEM,
+        id: 12,
+        working_text: null,
+        translation: { status: "failed", engine: "nllb-200-distilled-600M-ct2-int8", src_code: "arb_Arab" },
+      },
+    ]);
+    renderIncoming();
+
+    expect(await screen.findByText(/Translation failed/)).toBeInTheDocument();
+    expect(screen.getByText(TRANSLATED_ITEM.original_text)).toBeInTheDocument();
+    expect(screen.queryByText(/Awaiting translation/)).not.toBeInTheDocument();
+  });
+
+  it("counts failed translations in the honesty line", async () => {
+    serveItems([], { translation_failed: 4 });
+    renderIncoming();
+
+    expect(await screen.findByText(/4 translation failed/)).toBeInTheDocument();
+  });
+
   it("shows the honesty line naming silent sources", async () => {
     server.use(
       http.get("/api/raw-items", () =>

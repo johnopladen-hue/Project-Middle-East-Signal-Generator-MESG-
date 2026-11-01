@@ -11,7 +11,18 @@ from app.interfaces import Analyst, EmailProvider, SmsProvider, Translator
 
 
 class FakeTranslator(Translator):
+    engine = "fake-translator"
+
+    def __init__(self, fail_on: set[str] | None = None):
+        # Inputs containing any of these substrings raise, so tests can
+        # exercise the failure/retry path without a real engine.
+        self.fail_on = fail_on or set()
+        self.calls: list[str] = []
+
     def translate(self, text: str, source_lang: str, target_lang: str = "en") -> str:
+        self.calls.append(text)
+        if any(marker in text for marker in self.fail_on):
+            raise RuntimeError("fake translation failure")
         return f"[{source_lang}->{target_lang}] {text}"
 
 
