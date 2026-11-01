@@ -1,4 +1,5 @@
 import { HttpResponse, http } from "msw";
+import { capabilities } from "../fixtures";
 
 export const ADMIN_USER = { id: 1, username: "analyst", role: "admin", active: true };
 export const VIEWER_USER = { id: 2, username: "viewer1", role: "viewer", active: true };
@@ -31,6 +32,8 @@ export const handlers = [
     }),
   ),
   http.get("/api/briefs", () => HttpResponse.json([])),
+  // U-5: captured from the real endpoint over the dev seed (scripts/capture_frontend_fixtures.py).
+  http.get("/api/capabilities", () => HttpResponse.json(capabilities)),
   http.get("/api/recipients/summary", () =>
     HttpResponse.json({ active_count: 4, email_count: 3, sms_count: 1 }),
   ),

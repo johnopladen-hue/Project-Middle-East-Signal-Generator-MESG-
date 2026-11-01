@@ -5,6 +5,7 @@ import { Badge } from "../components/primitives/Badge";
 import { Card } from "../components/primitives/Card";
 import { ErrorState } from "../components/primitives/ErrorState";
 import { Skeleton } from "../components/primitives/Skeleton";
+import { HonestyBanner } from "../domain/HonestyBanner";
 import { useRawItems } from "../domain/useRawItems";
 
 const RTL_LANGUAGES = new Set(["ar", "fa", "he"]);
@@ -114,6 +115,7 @@ export function Incoming() {
 
   return (
     <div className="mx-auto max-w-3xl p-6">
+      <HonestyBanner />
       <h1 className="mb-4 text-lg font-semibold text-ink">Incoming</h1>
 
       <div className="mb-4 flex flex-wrap gap-2">

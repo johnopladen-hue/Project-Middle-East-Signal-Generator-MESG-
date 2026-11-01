@@ -5,6 +5,7 @@ import { Skeleton } from "../components/primitives/Skeleton";
 import { EmptyState } from "../components/primitives/EmptyState";
 import { ErrorState } from "../components/primitives/ErrorState";
 import { BriefItemCard } from "../domain/BriefItemCard";
+import { HonestyBanner } from "../domain/HonestyBanner";
 import { useBrief, useDailyBriefsList } from "../domain/useBriefs";
 
 function formatDate(isoDate) {
@@ -16,7 +17,7 @@ function formatDate(isoDate) {
   });
 }
 
-export function Dashboard() {
+function DailyBrief() {
   const [index, setIndex] = useState(0);
   const listQuery = useDailyBriefsList();
   const briefs = listQuery.data ?? [];
@@ -83,5 +84,17 @@ export function Dashboard() {
         </div>
       )}
     </div>
+  );
+}
+
+/** U-5: the honesty banner sits above every state of the daily brief. */
+export function Dashboard() {
+  return (
+    <>
+      <div className="mx-auto max-w-2xl px-6 pt-6">
+        <HonestyBanner />
+      </div>
+      <DailyBrief />
+    </>
   );
 }

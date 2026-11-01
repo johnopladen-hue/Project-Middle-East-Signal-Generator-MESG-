@@ -9,12 +9,13 @@
  * Look records up by name via these helpers rather than hard-coding ids -
  * ids are autoincrement and can shift on re-capture.
  */
+import capabilities from "./capabilities.json";
 import geoItemsCentcom from "./geo_items_centcom.json";
 import organizationDetails from "./organization_details.json";
 import organizations from "./organizations.json";
 import regions from "./regions.json";
 
-export { geoItemsCentcom, organizationDetails, organizations, regions };
+export { capabilities, geoItemsCentcom, organizationDetails, organizations, regions };
 
 export function orgSummaryByName(name) {
   const org = organizations.find((o) => o.name === name);

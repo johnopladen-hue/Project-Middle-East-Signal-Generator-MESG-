@@ -1,0 +1,9 @@
+{
+  "rss": false,
+  "telegram": false,
+  "triage_translation": false,
+  "graded_analysis": false,
+  "daily_brief": false,
+  "alert_delivery": false,
+  "synthetic_data_present": true
+}
