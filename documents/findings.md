@@ -229,7 +229,6 @@ For each entry:
 - **Finding:** A sort problem, not a collection problem. The dev DB held items from **43 sources**, but `GET /raw-items` sorted by `fetched_at`. A collection run fetches sources one after another, Telegram alphabetically, so the last channel fetched (WAFA, 87 posts) had the newest fetch times and filled the entire first page: **50 of 50 items**. Sorted by the item's own time (`coalesce(published_at, fetched_at)`), the same first 50 came from **18 sources** spanning Israeli, Iranian (state and opposition), Lebanese, Syrian, Palestinian, Jordanian and English-comparison outlets.
 - **Implication:** `/raw-items` now orders by publication time, falling back to fetch time, then id (test added and mutation-checked; reverting to `fetched_at` fails it). Fetch time says when MESG ran, not when anything happened, so it should never be the order a reader sees. Volume skew remains: Fars/IRNA/Akhbar-e Fori/Al Mayadeen/HaMoked post many times more than Amit Segal or Vahid Online, so a busy hour can still lean toward the prolific channels. If that bothers the Owner in daily use, the remedies are U-4's source/kind/language filters, or a later per-source balancing option. That is a Planner decision; nothing was silently capped.
 
-<<<<<<< HEAD
 - **Date:** 2026-10-11
 - **Context:** The Owner asked why the map renders so poorly. I decoded the self-hosted `centcom.pmtiles` (z2–z5, every tile in the AOR bbox) with `pmtiles` + `@mapbox/vector-tile` and compared it with `basemapStyle.js`.
 - **Finding:** Four causes, all in configuration or data, not a rendering bug:
@@ -263,7 +262,7 @@ For each entry:
   - Lessons: don't trust `optimizeDeps.exclude` to stay honoured across Vite upgrades or cache rebuilds. For map changes, check a rendered page (the headless DevTools-protocol method works on this machine), not just the style.
   - Also noticed: the app loads IBM Plex fonts from `fonts.googleapis.com`. That is a public server, which conflicts with D-014's "zero requests to any public server" posture for the map page. Not fixed here; open item.
   - On the map, the "Unlocated" panel covers Lebanon/Israel/Egypt in the default view (cosmetic, open item).
-=======
+
 - **Date:** 2026-11-01
 - **Context:** U-3 (D-019 scheduler & runtime), building `app/scheduler.py` and its tests in a cloud session, not on the Owner's PC.
 - **Finding:**
@@ -280,4 +279,3 @@ For each entry:
 - **Context:** Merging the Owner-approved PRs #34 (U-2) and #33 (map legibility) at the start of the session.
 - **Finding:** #33's base branch was `usable-today-u2-nllb`, not `main`: it was a stacked PR, opened on top of U-2 on 2026-10-11. Merging #34 first and then #33 put #33's two commits (`efa8812`, `e312af7`) into the already-merged U-2 branch, so **they never reached `main`**. The merge API reported `merged: true` both times. This came to light only because a later `git log origin/main` didn't show `43d1b5e`, and the PR's `base.ref` confirmed it. The Owner was told the map changes had landed when they had not, and that was corrected the same session. The changes were re-opened against `main` unchanged as #35.
 - **Implication:** "Merged" is not "on `main`". Before merging, check each PR's `base.ref`. After merging, confirm the merge commit is an ancestor of `origin/main` before reporting it as landed. A stacked PR has to be retargeted to `main` before its parent merges, or it strands.
->>>>>>> origin/main
