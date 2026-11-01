@@ -12,6 +12,10 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ["maplibre-gl"],
   },
+  // MapLibre's worker is an ES module that imports a shared chunk; bundle it as ES.
+  worker: {
+    format: "es",
+  },
   server: {
     proxy: {
       "/api": {
