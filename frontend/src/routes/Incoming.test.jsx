@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { server } from "../test/mocks/server";
 import { Incoming } from "./Incoming";
 
@@ -223,5 +224,132 @@ describe("Incoming (D-018, I-5/S-5)", () => {
     renderIncoming();
 
     expect(await screen.findByText(/Fars News Agency, IRNA/)).toBeInTheDocument();
+  });
+});
+
+// --- U-4: search, quick filters, time window, auto-refresh -------------------
+// Same genuine post as above (Al Jazeera Mubasher 510450) and its real NLLB output.
+const AJM_ITEM = {
+  id: 10,
+  source_id: 10,
+  source_name: "Al Jazeera Mubasher",
+  kind: "telegram",
+  source_class: "native",
+  pair_id: null,
+  designation_note: null,
+  verification_note: null,
+  fetched_at: "2026-10-11T15:30:00Z",
+  published_at: "2026-10-11T14:38:36Z",
+  original_lang: "ar",
+  original_text: "عاجل | المتحدث باسم التحالف: اعتداء بمقذوف مجهول على صالة المسافرين رقم 4 بمطار الملك خالد الدولي",
+  working_text:
+    "Coalition spokesman: An unknown assault on passenger lounge number four at King Khalid International Airport.",
+  translation: { status: "ok", engine: "nllb-200-distilled-600M-ct2-int8", src_code: "arb_Arab" },
+  url: "https://t.me/ajmubasher/510450",
+};
+
+/** Serves `respond(params, n)` and records every request's query params. */
+function recordRequests(respond) {
+  const seen = [];
+  server.use(
+    http.get("/api/raw-items", ({ request }) => {
+      const params = new URL(request.url).searchParams;
+      seen.push(params);
+      return HttpResponse.json({
+        items: [AJM_ITEM],
+        total: 1,
+        awaiting_translation: 0,
+        translation_failed: 0,
+        silent_sources: [],
+        max_id: AJM_ITEM.id,
+        newer_count: 0,
+        ...(respond ? respond(params, seen.length) : {}),
+      });
+    }),
+  );
+  return seen;
+}
+
+describe("Incoming — daily use (U-4)", () => {
+  it("sends the search text as q, so one box searches English and the original script", async () => {
+    const user = userEvent.setup();
+    const seen = recordRequests();
+    renderIncoming();
+    await screen.findByText(AJM_ITEM.working_text);
+
+    await user.type(screen.getByRole("searchbox", { name: "Search items" }), "مطار");
+    await waitFor(() => expect(seen.at(-1).get("q")).toBe("مطار"));
+  });
+
+  it.each([
+    ["Kind", "Telegram", "kind", "telegram"],
+    ["Language", "Persian", "language", "fa"],
+    ["Time", "6h", "window_hours", "6"],
+  ])("the %s quick filter %s sends %s=%s and shows as pressed", async (group, label, param, value) => {
+    const user = userEvent.setup();
+    const seen = recordRequests();
+    renderIncoming();
+    await screen.findByText(AJM_ITEM.working_text);
+
+    const button = within(screen.getByRole("group", { name: group })).getByRole("button", { name: label });
+    await user.click(button);
+    await waitFor(() => expect(seen.at(-1).get(param)).toBe(value));
+    expect(button).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("pins the list to the newest id it opened with, so a refetch never reflows it", async () => {
+    const seen = recordRequests();
+    renderIncoming();
+    await waitFor(() => expect(seen.at(-1)?.get("up_to_id")).toBe(String(AJM_ITEM.id)));
+    expect(seen[0].get("up_to_id")).toBeNull();
+  });
+
+  it("shows 'N new since you opened' and re-pins when the reader asks to see them", async () => {
+    const user = userEvent.setup();
+    // While pinned at 10, three newer items exist and the newest matching id is 13.
+    const seen = recordRequests((params) => (params.get("up_to_id") === "10" ? { newer_count: 3, max_id: 13 } : {}));
+    renderIncoming();
+
+    await user.click(await screen.findByRole("button", { name: "3 new since you opened — show" }));
+    await waitFor(() => expect(seen.at(-1).get("up_to_id")).toBe("13"));
+    await waitFor(() => expect(screen.queryByText(/new since you opened/)).not.toBeInTheDocument());
+  });
+
+  it("refetches on its own every 60 seconds", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      const seen = recordRequests();
+      renderIncoming();
+      await waitFor(() => expect(seen.at(-1)?.get("up_to_id")).toBe(String(AJM_ITEM.id)));
+      const before = seen.length;
+      await vi.advanceTimersByTimeAsync(60_000);
+      await waitFor(() => expect(seen.length).toBeGreaterThan(before));
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("labels an item whose only time is the fetch time", async () => {
+    recordRequests(() => ({ items: [{ ...AJM_ITEM, published_at: null }] }));
+    renderIncoming();
+    expect(await screen.findByText(/^Fetched .* \(no publication time\)$/)).toBeInTheDocument();
+  });
+
+  it("does not call a published item's time a fetch time", async () => {
+    recordRequests();
+    renderIncoming();
+    await screen.findByText(AJM_ITEM.working_text);
+    expect(screen.queryByText(/no publication time/)).not.toBeInTheDocument();
+  });
+
+  it("says no items match, rather than 'nothing collected', when a filter empties the list", async () => {
+    const user = userEvent.setup();
+    recordRequests((params) => (params.get("kind") ? { items: [], total: 0, max_id: null } : {}));
+    renderIncoming();
+    await screen.findByText(AJM_ITEM.working_text);
+
+    await user.click(within(screen.getByRole("group", { name: "Kind" })).getByRole("button", { name: "RSS" }));
+    expect(await screen.findByText("No items match these filters.")).toBeInTheDocument();
+    expect(screen.queryByText(/No items collected yet/)).not.toBeInTheDocument();
   });
 });

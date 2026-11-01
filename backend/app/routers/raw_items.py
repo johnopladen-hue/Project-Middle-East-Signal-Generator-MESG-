@@ -53,6 +53,11 @@ class RawItemOut(BaseModel):
 class RawItemsPage(BaseModel):
     items: list[RawItemOut]
     total: int
+    # U-4 "N new since you opened": the newest id among items matching the
+    # filters (the reader's baseline), and how many matching items arrived
+    # after `up_to_id` - counted, never mixed into the list under the reader.
+    max_id: int | None
+    newer_count: int
     awaiting_translation: int
     translation_failed: int
     silent_sources: list[str]
@@ -105,6 +110,9 @@ def list_raw_items(
     source_class: str | None = Query(None),
     kind: str | None = Query(None),
     since: datetime | None = Query(None),
+    q: str | None = Query(None, max_length=200),
+    window_hours: int | None = Query(None, ge=1, le=24 * 7),
+    up_to_id: int | None = Query(None, ge=0),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
@@ -121,12 +129,30 @@ def list_raw_items(
     if since:
         query = query.filter(RawItem.fetched_at >= since)
 
-    total = query.count()
     # Newest by the item's own publication time, not by when MESG fetched it:
     # a collection run fetches sources one after another, so fetch-time order
     # put whichever source ran last (WAFA, alphabetically) across the whole
-    # first page (findings.md, 2026-10-11).
+    # first page (findings.md, 2026-10-11). The time window uses the same
+    # clock; the UI labels items whose time is a fetch time.
     item_time = func.coalesce(RawItem.published_at, RawItem.fetched_at)
+    if window_hours:
+        query = query.filter(item_time >= datetime.now(timezone.utc) - timedelta(hours=window_hours))
+    if q and q.strip():
+        # U-4: one box searches the original script and the English triage line.
+        # lower() folds ASCII only; Arabic, Persian and Hebrew have no case.
+        needle = q.strip().lower()
+        query = query.filter(
+            func.lower(RawItem.original_text).contains(needle, autoescape=True)
+            | func.lower(func.coalesce(RawItem.working_text, "")).contains(needle, autoescape=True)
+        )
+
+    max_id = query.with_entities(func.max(RawItem.id)).scalar()
+    newer_count = 0
+    if up_to_id is not None:
+        newer_count = query.filter(RawItem.id > up_to_id).count()
+        query = query.filter(RawItem.id <= up_to_id)
+
+    total = query.count()
     rows = query.order_by(item_time.desc(), RawItem.id.desc()).offset(offset).limit(limit).all()
     translations = _translations_for(db, [raw_item.id for raw_item, _ in rows])
     items = [_to_out(raw_item, source, translations.get(raw_item.id)) for raw_item, source in rows]
@@ -149,6 +175,8 @@ def list_raw_items(
     return RawItemsPage(
         items=items,
         total=total,
+        max_id=max_id,
+        newer_count=newer_count,
         awaiting_translation=awaiting_translation,
         translation_failed=translation_failed,
         silent_sources=silent_sources,
